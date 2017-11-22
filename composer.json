@@ -3,13 +3,13 @@
     "description": "Template composer package for creating other packages",
     "homepage": "http://github.com/GinoPane/PhpNanoRest",
     "keywords": [
-        "http-client",
-        "rest-client",
+        "http client",
+        "rest client",
         "minimalistic",
         "http",
         "rest",
-        "php-rest",
-        "nano-rest"
+        "php rest",
+        "nano rest"
     ],
     "license": "DBAD",
     "authors": [
@@ -20,6 +20,11 @@
             "role": "Developer"
         }
     ],
+    "support": {
+        "source": "http://github.com/GinoPane/PhpNanoRest",
+        "docs": "https://github.com/GinoPane/PhpNanoRest/blob/master/README.md",
+        "issues": "https://github.com/GinoPane/PhpNanoRest/issues"
+    },
     "type": "library",
     "require": {
         "php": "^7.0"
@@ -32,7 +37,7 @@
     },
 	"autoload": {
         "psr-4": {
-            "GinoPane\\PhpNanoRest\\": "src/"
+            "GinoPane\\NanoRest\\": "src/"
         }
     }
 }
