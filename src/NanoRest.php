@@ -17,7 +17,8 @@ use GinoPane\NanoRest\{
  *
  * Abstract implementation of transport layer
  *
- * @package GinoPane\PhpNanoRest
+ * @package GinoPane\NanoRest
+ * @author Sergey <Gino Pane> Karavay
  */
 class NanoRest
 {
@@ -164,12 +165,13 @@ class NanoRest
         $transportOptions = $this->processTransportOptions($context);
 
         $defaults = array(
-            CURLOPT_HTTPHEADER => array_values($context->getHeaders() + $this->requestContext->getHeaders()),
-            CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_SSL_VERIFYHOST => false,
-            CURLOPT_CONNECTTIMEOUT => $this->connectionTimeout,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT => $this->timeout
+            CURLOPT_HEADER          => true,
+            CURLOPT_HTTPHEADER      => array_values($context->getHeaders() + $this->requestContext->getHeaders()),
+            CURLOPT_SSL_VERIFYPEER  => false,
+            CURLOPT_SSL_VERIFYHOST  => false,
+            CURLOPT_CONNECTTIMEOUT  => $this->connectionTimeout,
+            CURLOPT_RETURNTRANSFER  => true,
+            CURLOPT_TIMEOUT         => $this->timeout
         );
 
         if (!is_null($this->proxy)) {
@@ -198,7 +200,7 @@ class NanoRest
         $verbose = fopen('php://temp', 'w+');
         curl_setopt($curlHandle, CURLOPT_STDERR, $verbose);
 
-        $response = curl_exec($curlHandle);
+        list($headers, $response) = explode("\r\n\r\n", curl_exec($curlHandle), 2);
         $error = curl_error($curlHandle);
         $errorNumber = curl_errno($curlHandle);
 
@@ -236,7 +238,9 @@ class NanoRest
         $transportOptions = $context->getTransportOptions();
 
         $this->timeout = isset($transportOptions['timeout']) ? $transportOptions['timeout'] : $this->timeout;
-        $this->connectionTimeout = isset($transportOptions['connectionTimeout']) ? $transportOptions['connectionTimeout'] : $this->connectionTimeout;
+        $this->connectionTimeout = isset($transportOptions['connectionTimeout'])
+            ? $transportOptions['connectionTimeout']
+            : $this->connectionTimeout;
 
         unset($transportOptions['timeout']);
         unset($transportOptions['connectionTimeout']);
@@ -255,7 +259,10 @@ class NanoRest
 
         $requestData = $context->getData();
         $requestData = is_array($requestData) ? http_build_query($requestData) : $requestData;
-        $url = $this->proxyScript ? $this->proxyScript . urlencode($context->getRequestUri()) : $context->getRequestUri();
+
+        $url = $this->proxyScript
+            ? $this->proxyScript . urlencode($context->getRequestUri())
+            : $context->getRequestUri();
 
         if ($context->getMethod()) {
             switch ($context->getMethod()) {

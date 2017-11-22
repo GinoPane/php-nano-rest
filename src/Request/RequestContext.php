@@ -8,6 +8,7 @@ use GinoPane\NanoRest\Exceptions\RequestContextException;
  * Class RequestContext
  *
  * @package GinoPane\NanoRest\Request
+ * @author Sergey <Gino Pane> Karavay
  */
 class RequestContext
 {
@@ -54,100 +55,84 @@ class RequestContext
     /**
      * Default content type for requests
      */
-    protected $contentType = "text/xml";
+    private $contentType = '';
 
     /**
      * Default charset for requests
      *
      * @var string
      */
-    protected $charset = "utf-8";
+    private $charset = '';
 
     /**
      * Preferred HTTP method
      *
      * @var string
      */
-    protected $method = self::METHOD_POST;
+    private $method = '';
 
     /**
      * List of headers for a request
      *
      * @var array
      */
-    protected $headers = array();
+    private $headers = array();
 
     /**
      * Generic data to be sent
      *
      * @var mixed
      */
-    protected $data = null;
+    private $data = null;
 
     /**
      * Parameters that should be appended to request URI
      *
      * @var array
      */
-    protected $requestParams = array();
+    private $requestParameters = array();
 
     /**
      * Options for transport
      *
      * @var array
      */
-    protected $transportOptions = array();
+    private $transportOptions = array();
 
     /**
      * URI string for request
      *
      * @var string
      */
-    protected $uri = '';
-
-    /**
-     * Enable/disable sandbox mode for the request. Can be used
-     *
-     * @var bool
-     */
-    protected $sandboxMode = false;
-
-    /**
-     * Options for sandbox mode
-     *
-     * @var array
-     */
-    protected $sandboxOptions = array();
+    private $uri = '';
 
     /**
      * RequestContext constructor
      *
-     * @param array $options Available keys are:
-     *  uri,
-     *  headers,
-     *  data,
-     *  method
+     * @param array $options Available keys are: 'uri', 'headers', 'data', 'method', 'charset', 'contentType',
+     *                          'requestParameters', 'transportOptions'
      */
     public function __construct(array $options = array())
     {
         $uri = '';
-        $headers = array();
         $data = null;
-        $requestParams = array();
-        $method = $this->method;
+        $method = self::METHOD_POST;
+        $charset = "utf-8";
+        $headers = array();
+        $contentType = self::CONTENT_TYPE_TEXT_PLAIN;
         $transportOptions = array();
+        $requestParameters = array();
 
         extract($options, EXTR_IF_EXISTS | EXTR_OVERWRITE);
 
-        $this->setUri($uri);
-        $this->setHeaders($headers);
-        $this->setData($data);
-        $this->setRequestParameters($requestParams);
-        $this->setTransportOptions($transportOptions);
-
-        if ($method) {
-            $this->setMethod($method);
-        }
+        $this->setUri($uri)
+            ->setData($data)
+            ->setMethod($method)
+            ->setCharset($charset)
+            ->setHeaders($headers)
+            ->setContentType($contentType)
+            ->setTransportOptions($transportOptions)
+            ->setRequestParameters($requestParameters);
     }
 
     /**
@@ -155,24 +140,32 @@ class RequestContext
      *
      * @param $header
      * @param $data
+     *
+     * @return RequestContext
      */
-    public function setHeader($header, $data)
+    public function setHeader($header, $data): RequestContext
     {
         $this->headers[$header] = "{$header}: $data";
+
+        return $this;
     }
 
     /**
      * Set headers array
      *
      * @param array $headers Array of header -> data pairs
+     *
+     * @return RequestContext
      */
-    public function setHeaders(array $headers = array())
+    public function setHeaders(array $headers = array()): RequestContext
     {
         $this->headers = array();
 
         foreach ($headers as $header => $data) {
             $this->setHeader($header, $data);
         }
+
+        return $this;
     }
 
     /**
@@ -180,9 +173,23 @@ class RequestContext
      *
      * @return array
      */
-    public function getHeaders()
+    public function getHeaders(): array
     {
         return $this->headers;
+    }
+
+    /**
+     * Set data for request
+     *
+     * @param mixed $data
+     *
+     * @return RequestContext
+     */
+    public function setData($data): RequestContext
+    {
+        $this->data = $data;
+
+        return $this;
     }
 
     /**
@@ -196,21 +203,11 @@ class RequestContext
     }
 
     /**
-     * Set data for request
-     *
-     * @param mixed $data
-     */
-    public function setData($data)
-    {
-        $this->data = $data;
-    }
-
-    /**
      * Get HTTP method
      *
      * @return string
      */
-    public function getMethod()
+    public function getMethod(): string
     {
         return $this->method;
     }
@@ -221,14 +218,18 @@ class RequestContext
      * @param string $method
      *
      * @throws RequestContextException
+     *
+     * @return RequestContext
      */
-    public function setMethod($method)
+    public function setMethod(string $method): RequestContext
     {
         if (!in_array($method, self::$availableMethods)) {
             throw new RequestContextException('Supplied HTTP method is not supported');
         }
 
         $this->method = $method;
+
+        return $this;
     }
 
     /**
@@ -236,7 +237,7 @@ class RequestContext
      *
      * @return string
      */
-    public function getUri()
+    public function getUri(): string
     {
         return $this->uri;
     }
@@ -245,18 +246,22 @@ class RequestContext
      * Set URI string
      *
      * @param string $uri
+     *
+     * @return RequestContext
      */
-    public function setUri($uri)
+    public function setUri(string $uri): RequestContext
     {
         $this->uri = $uri;
+
+        return $this;
     }
 
     /**
-     * Get URI string with parameters applied
+     * Get URI string with request parameters applied
      *
      * @return string
      */
-    public function getRequestUri()
+    public function getRequestUri(): string
     {
         $uri = $this->getUri();
 
@@ -272,19 +277,23 @@ class RequestContext
      *
      * @return array
      */
-    public function getRequestParameters()
+    public function getRequestParameters(): array
     {
-        return $this->requestParams;
+        return $this->requestParameters;
     }
 
     /**
      * Set an array of request params
      *
-     * @param array $requestParams
+     * @param array $requestParameters
+     *
+     * @return RequestContext
      */
-    public function setRequestParameters(array $requestParams = array())
+    public function setRequestParameters(array $requestParameters = array()): RequestContext
     {
-        $this->requestParams = $requestParams;
+        $this->requestParameters = $requestParameters;
+
+        return $this;
     }
 
     /**
@@ -292,19 +301,9 @@ class RequestContext
      *
      * @return array
      */
-    public function getTransportOptions()
+    public function getTransportOptions(): array
     {
         return $this->transportOptions;
-    }
-
-    /**
-     * Set an array of transport options for context
-     *
-     * @param array $transportOptions
-     */
-    public function setTransportOptions(array $transportOptions)
-    {
-        $this->transportOptions = $transportOptions;
     }
 
     /**
@@ -312,62 +311,92 @@ class RequestContext
      *
      * @param $optionName
      * @param $optionValue
+     *
+     * @return RequestContext
      */
-    public function setTransportOption($optionName, $optionValue)
+    public function setTransportOption($optionName, $optionValue): RequestContext
     {
         $this->transportOptions[$optionName] = $optionValue;
+
+        return $this;
     }
 
     /**
-     * Sets sandboxMode to 'true'/'false' respectively to passed $mode argument
+     * Set an array of transport options for context
      *
-     * @param $mode
+     * @param array $transportOptions
+     *
+     * @return RequestContext
      */
-    public function setSandboxMode($mode)
+    public function setTransportOptions(array $transportOptions): RequestContext
     {
-        $this->sandboxMode = (bool)$mode;
+        $this->transportOptions = $transportOptions;
+
+        return $this;
     }
 
     /**
-     * @return bool
+     * @return mixed
      */
-    public function getSandboxMode()
+    public function getContentType()
     {
-        return $this->sandboxMode;
+        return $this->contentType;
     }
 
     /**
-     * @return array
+     * @param mixed $contentType
+     *
+     * @return RequestContext
      */
-    public function getSandboxOptions()
+    public function setContentType($contentType): RequestContext
     {
-        return $this->sandboxOptions;
+        $this->contentType = $contentType;
+
+        return $this;
     }
 
     /**
-     * @param array $sandboxOptions
-     */
-    public function setSandboxOptions(array $sandboxOptions)
-    {
-        $this->sandboxOptions = $sandboxOptions;
-    }
-
-    /**
-     * Get string representation of an object
+     * Get charset for current request
      *
      * @return string
      */
-    public function __toString()
+    public function getCharset(): string
     {
-        $headers = $this->getHeaders() ? print_r($this->getHeaders(), 1) : "No headers were set";
-        $data = $this->getData() ? print_r($this->getData(), 1) : "No data was set";
-        $requestParameters = $this->getRequestParameters() ? print_r($this->getRequestParameters(), 1) : "No request parameters were set";
+        return $this->charset;
+    }
+
+    /**
+     * Set charset for current request
+     *
+     * @param string $charset
+     *
+     * @return RequestContext
+     */
+    public function setCharset(string $charset): RequestContext
+    {
+        $this->charset = $charset;
+
+        return $this;
+    }
+
+    /**
+     * Get string representation of RequestContext object
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        $headers = $this->getHeaders() ? print_r($this->getHeaders(), true) : "No headers were set";
+        $data = $this->getData() ? print_r($this->getData(), true) : "No data was set";
+        $requestParameters = $this->getRequestParameters()
+            ? print_r($this->getRequestParameters(), true)
+            : "No request parameters were set";
 
         return <<<DEBUG
         
 ===================        
 Method: {$this->getMethod()}
-URI: {$this->getRequestUri()}
+URI: {$this->getUri()}
 ===================
 Headers:
 
