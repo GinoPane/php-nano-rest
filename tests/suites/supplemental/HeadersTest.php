@@ -5,12 +5,12 @@ namespace GinoPane\NanoRest;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Corresponding class to test NanoRestTest class
+ * Test simple headers container
  *
  * @package GinoPane\NanoRest
  * @author Sergey <Gino Pane> Karavay
 */
-class NanoRestTest extends TestCase
+class HeadersTest extends TestCase
 {
     /**
      * Just check if the NanoRest has no syntax errors

@@ -13,12 +13,15 @@
 		stopOnRisky="false"
 >
 	<testsuites>
-		<testsuite name="Main">
-			<directory>./tests/suites/main/</directory>
+		<!--<testsuite name="Main">-->
+			<!--<directory>./tests/suites/main/</directory>-->
+		<!--</testsuite>-->
+		<testsuite name="Supplemental">
+			<directory>./tests/suites/supplemental/</directory>
 		</testsuite>
-		<testsuite name="Integration">
-			<directory>./tests/suites/integration/</directory>
-		</testsuite>
+		<!--<testsuite name="Integration">-->
+			<!--<directory>./tests/suites/integration/</directory>-->
+		<!--</testsuite>-->
 	</testsuites>
 	<filter>
 		<whitelist processUncoveredFilesFromWhitelist="false">
