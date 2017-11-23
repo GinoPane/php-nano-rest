@@ -116,7 +116,7 @@ class RequestContext
     {
         $uri = '';
         $data = null;
-        $method = self::METHOD_POST;
+        $method = self::METHOD_GET;
         $charset = "utf-8";
         $headers = array();
         $contentType = self::CONTENT_TYPE_TEXT_PLAIN;

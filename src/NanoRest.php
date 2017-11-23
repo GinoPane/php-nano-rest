@@ -147,7 +147,16 @@ class NanoRest
             $responseContext = $this->getResponseContext();
         }
 
-        $responseContext->setContent($this->executeRequestHandle($curlHandle));
+        list(
+            'httpStatus'    => $status,
+            'response'      => $content,
+            'headers'       => $headers
+        ) = $this->executeRequestHandle($curlHandle);
+
+        $responseContext->setRequestContext($requestContext);
+        $responseContext->setHttpStatusCode($status);
+        $responseContext->setContent($content);
+        //$responseContext->setHeaders($headers);
 
         return $responseContext;
     }
@@ -166,7 +175,7 @@ class NanoRest
 
         $defaults = array(
             CURLOPT_HEADER          => true,
-            CURLOPT_HTTPHEADER      => array_values($context->getHeaders() + $this->requestContext->getHeaders()),
+            CURLOPT_HTTPHEADER      => array_values($context->getHeaders() + $this->getRequestContext()->getHeaders()),
             CURLOPT_SSL_VERIFYPEER  => false,
             CURLOPT_SSL_VERIFYHOST  => false,
             CURLOPT_CONNECTTIMEOUT  => $this->connectionTimeout,
@@ -201,8 +210,10 @@ class NanoRest
         curl_setopt($curlHandle, CURLOPT_STDERR, $verbose);
 
         list($headers, $response) = explode("\r\n\r\n", curl_exec($curlHandle), 2);
+
         $error = curl_error($curlHandle);
         $errorNumber = curl_errno($curlHandle);
+        $httpStatus = curl_getinfo($curlHandle, CURLINFO_HTTP_CODE);
 
         curl_close($curlHandle);
 
@@ -223,7 +234,7 @@ class NanoRest
             throw $transportException;
         }
 
-        return $response;
+        return ['response' => $response, 'httpStatus' => $httpStatus, 'headers' => $headers];
     }
 
     /**

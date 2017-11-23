@@ -5,12 +5,10 @@ namespace GinoPane\NanoRest;
 use PHPUnit\Framework\TestCase;
 
 /**
-*  Corresponding class to test YourClass class
-*
-*  For each class in your library, there should be a corresponding unit test
-*
+ *  Corresponding class to test NanoRestTest class
+ *
  * @package GinoPane\NanoRest
-*  @author Sergey <Gino Pane> Karavay
+ *  @author Sergey <Gino Pane> Karavay
 */
 class NanoRestTest extends TestCase
 {

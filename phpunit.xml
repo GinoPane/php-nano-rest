@@ -13,8 +13,11 @@
 		stopOnRisky="false"
 >
 	<testsuites>
-		<testsuite name="Main tests">
+		<testsuite name="Main">
 			<directory>./tests/suites/main/</directory>
+		</testsuite>
+		<testsuite name="Integration">
+			<directory>./tests/suites/integration/</directory>
 		</testsuite>
 	</testsuites>
 	<filter>
