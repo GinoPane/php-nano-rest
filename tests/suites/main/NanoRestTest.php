@@ -15,7 +15,7 @@ class NanoRestTest extends TestCase
     /**
      * Just check if the NanoRest has no syntax errors
      */
-    public function testIsThereAnySyntaxError()
+    public function testIfObjectCanBeCreated()
     {
         $object = new NanoRest();
 

@@ -248,13 +248,17 @@ class NanoRest
     {
         $transportOptions = $context->getTransportOptions();
 
-        $this->timeout = isset($transportOptions['timeout']) ? $transportOptions['timeout'] : $this->timeout;
-        $this->connectionTimeout = isset($transportOptions['connectionTimeout'])
-            ? $transportOptions['connectionTimeout']
-            : $this->connectionTimeout;
+        if (isset($transportOptions['timeout'])) {
+            $this->timeout = $transportOptions['timeout'];
 
-        unset($transportOptions['timeout']);
-        unset($transportOptions['connectionTimeout']);
+            unset($transportOptions['timeout']);
+        }
+
+        if (isset($transportOptions['connectionTimeout'])) {
+            $this->connectionTimeout = $transportOptions['connectionTimeout'];
+
+            unset($transportOptions['connectionTimeout']);
+        }
 
         return $transportOptions;
     }

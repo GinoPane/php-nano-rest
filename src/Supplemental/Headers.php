@@ -11,7 +11,22 @@ namespace GinoPane\NanoRest\Supplemental;
  */
 class Headers
 {
+    /**
+     * Array of stored headers
+     *
+     * @var array
+     */
     private $headers = [];
+
+    /**
+     * Headers constructor
+     *
+     * @param array $headers
+     */
+    public function __construct(array $headers = [])
+    {
+        $this->setHeaders($headers);
+    }
 
     /**
      * Set individual header
@@ -23,7 +38,7 @@ class Headers
      */
     public function setHeader(string $header, string $content): Headers
     {
-        $this->headers[$header] = "$header: $content";
+        $this->headers[$header] = $content;
 
         return $this;
     }
@@ -40,10 +55,34 @@ class Headers
         $this->headers = array();
 
         foreach ($headers as $header => $data) {
-            $this->setHeader($header, $data);
+            $this->setHeader((string)$header, (string)$data);
         }
 
         return $this;
+    }
+
+    /**
+     * Set headers from headers string
+     *
+     * @param string $headers
+     *
+     * @return Headers
+     */
+    public function setHeadersFromString(string $headers): Headers
+    {
+        return $this->setHeaders($this::parseHeaders($headers));
+    }
+
+    /**
+     * Get header value by name
+     *
+     * @param string $key
+     *
+     * @return null|string
+     */
+    public function getHeader(string $key): ?string
+    {
+        return isset($this->headers[$key]) ? $this->headers[$key] : null;
     }
 
     /**
@@ -54,5 +93,79 @@ class Headers
     public function getHeaders(): array
     {
         return $this->headers;
+    }
+
+    /**
+     * Returns an array of "name: value" pair for request
+     *
+     * @return array
+     */
+    public function getHeadersForRequest(): array
+    {
+        $headers = $this->headers;
+
+        array_walk($headers, function (&$value, $name) {
+            $value = "$name: $value";
+        });
+
+        return $headers;
+    }
+
+    /**
+     * Returns true if headers exists, false otherwise
+     *
+     * @param string $header
+     *
+     * @return bool
+     */
+    public function headerExists(string $header): bool
+    {
+        return array_key_exists($header, $this->getHeaders());
+    }
+
+    /**
+     * Parse headers string into associative array. Only named headers returned
+     *
+     * Duplicated headers are parsed into comma-separated string:
+     * @link https://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html#sec4.2
+     * @link https://stackoverflow.com/questions/4371328/are-duplicate-http-response-headers-acceptable
+     * @link https://stackoverflow.com/questions/6368574/how-to-get-the-functionality-of-http-parse-headers-without-pecl
+     *
+     * @param string $headers
+     *
+     * @return array
+     */
+    public static function parseHeaders(string $headers): array
+    {
+        $parsedHeaders = array();
+
+        foreach (explode("\n", $headers) as $header) {
+            @list($headerTitle, $headerValue) = explode(':', $header, 2);
+
+            if (isset($headerValue)) {
+                $headerTitle = trim($headerTitle);
+                $headerValue = trim($headerValue);
+
+                if (!isset($parsedHeaders[$headerTitle])) {
+                    $parsedHeaders[$headerTitle] = $headerValue;
+                } else {
+                    $parsedHeaders[$headerTitle] .= ", $headerValue";
+                }
+            }
+        }
+
+        return $parsedHeaders;
+    }
+
+    /**
+     * Helper method to statically create Headers object from headers string
+     *
+     * @param string $headers
+     *
+     * @return Headers
+     */
+    public static function createFromString(string $headers): Headers
+    {
+        return new self(Headers::parseHeaders($headers));
     }
 }

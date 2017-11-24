@@ -2,6 +2,7 @@
 
 namespace GinoPane\NanoRest\Request;
 
+use GinoPane\NanoRest\Supplemental\Headers;
 use GinoPane\NanoRest\Exceptions\RequestContextException;
 
 /**
@@ -74,9 +75,9 @@ class RequestContext
     /**
      * List of headers for a request
      *
-     * @var array
+     * @var Headers
      */
-    private $headers = array();
+    private $headers = null;
 
     /**
      * Generic data to be sent
