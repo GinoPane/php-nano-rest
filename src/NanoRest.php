@@ -153,10 +153,11 @@ class NanoRest
             'headers'       => $headers
         ) = $this->executeRequestHandle($curlHandle);
 
-        $responseContext->setRequestContext($requestContext);
-        $responseContext->setHttpStatusCode($status);
-        $responseContext->setContent($content);
-        //$responseContext->setHeaders($headers);
+        $responseContext->setRequestContext($requestContext)
+            ->setHttpStatusCode($status)
+            ->setContent($content);
+
+        $responseContext->headers()->setHeadersFromString($headers);
 
         return $responseContext;
     }
@@ -175,7 +176,10 @@ class NanoRest
 
         $defaults = array(
             CURLOPT_HEADER          => true,
-            CURLOPT_HTTPHEADER      => array_values($context->getHeaders() + $this->getRequestContext()->getHeaders()),
+            CURLOPT_HTTPHEADER      => array_values(
+                $context->getRequestHeaders() +
+                $this->getRequestContext()->getRequestHeaders()
+            ),
             CURLOPT_SSL_VERIFYPEER  => false,
             CURLOPT_SSL_VERIFYHOST  => false,
             CURLOPT_CONNECTTIMEOUT  => $this->connectionTimeout,

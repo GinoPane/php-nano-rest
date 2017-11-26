@@ -44,7 +44,7 @@ class HeadersTest extends TestCase
     {
         $parsedHeaders = Headers::parseHeaders($headersToParse);
 
-        $this->assertEquals($expectedHeaders, $parsedHeaders);
+        $this->assertJsonStringEqualsJsonString(json_encode($expectedHeaders), json_encode($parsedHeaders));
     }
 
     public function testIfHeadersCanBeSetFromString()
@@ -116,16 +116,16 @@ class HeadersTest extends TestCase
                     Content-Length: 181
                     Via: 1.1 vegur",
                 [
-                    'Connection' => 'keep-alive',
-                    'Server' => 'meinheld/0.6.1, foo, bar',
-                    'Date' => 'Fri, 24 Nov 2017 09:26:03 GMT',
-                    'Content-Type' => 'application/json',
-                    'Access-Control-Allow-Origin' => '*',
-                    'Access-Control-Allow-Credentials' => 'true',
-                    'X-Powered-By' => 'Flask',
-                    'X-Processed-Time' => '0.000829935073853',
-                    'Content-Length' => '181',
-                    'Via' => '1.1 vegur'
+                    'connection' => 'keep-alive',
+                    'server' => 'meinheld/0.6.1, foo, bar',
+                    'date' => 'Fri, 24 Nov 2017 09:26:03 GMT',
+                    'x-powered-by' => 'Flask',
+                    'x-processed-time' => '0.000829935073853',
+                    'content-length' => '181',
+                    'via' => '1.1 vegur',
+                    'content-type' => 'application/json',
+                    'access-control-allow-origin' => '*',
+                    'access-control-allow-credentials' => 'true',
                 ]
             ],
             [

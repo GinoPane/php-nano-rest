@@ -38,7 +38,7 @@ class Headers
      */
     public function setHeader(string $header, string $content): Headers
     {
-        $this->headers[$header] = $content;
+        $this->headers[self::processKey($header)] = $content;
 
         return $this;
     }
@@ -82,6 +82,8 @@ class Headers
      */
     public function getHeader(string $key): ?string
     {
+        $key = self::processKey($key);
+
         return isset($this->headers[$key]) ? $this->headers[$key] : null;
     }
 
@@ -120,7 +122,7 @@ class Headers
      */
     public function headerExists(string $header): bool
     {
-        return array_key_exists($header, $this->getHeaders());
+        return array_key_exists(self::processKey($header), $this->getHeaders());
     }
 
     /**
@@ -143,7 +145,7 @@ class Headers
             @list($headerTitle, $headerValue) = explode(':', $header, 2);
 
             if (isset($headerValue)) {
-                $headerTitle = trim($headerTitle);
+                $headerTitle = self::processKey(trim($headerTitle));
                 $headerValue = trim($headerValue);
 
                 if (!isset($parsedHeaders[$headerTitle])) {
@@ -167,5 +169,16 @@ class Headers
     public static function createFromString(string $headers): Headers
     {
         return new self(Headers::parseHeaders($headers));
+    }
+
+    /**
+     * Just returns processed (lower-cased) version of the $key
+     *
+     * @param string $key
+     * @return string
+     */
+    private static function processKey(string $key): string
+    {
+        return strtolower($key);
     }
 }

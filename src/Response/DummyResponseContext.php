@@ -18,7 +18,7 @@ class DummyResponseContext extends ResponseContext
      *
      * @return string
      */
-    public function getRaw(array $options = array())
+    public function getRaw(array $options = array()): string
     {
         return $this->content;
     }
@@ -30,7 +30,7 @@ class DummyResponseContext extends ResponseContext
      *
      * @return array
      */
-    public function getArray(array $options = array())
+    public function getArray(array $options = array()): array
     {
         return (array)$this->content;
     }
@@ -52,22 +52,21 @@ class DummyResponseContext extends ResponseContext
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
-        return print_r($this->content, 1);
+        return print_r($this->content, true);
     }
 
     /**
      * Dummy test, everything is valid for this context
      *
-     * @param mixed $content
+     * @param string $content
      * @param string $error
      *
      * @return bool
      */
-    public function isValid($content, &$error = '')
+    public function isValid(string $content, string &$error): bool
     {
         return true;
     }
-
 }

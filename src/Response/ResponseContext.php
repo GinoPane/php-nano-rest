@@ -3,8 +3,7 @@
 namespace GinoPane\NanoRest\Response;
 
 use GinoPane\NanoRest\{
-    Exceptions\ResponseContextException,
-    Request\RequestContext
+    Exceptions\ResponseContextException, Request\RequestContext, Supplemental\Headers
 };
 
 /**
@@ -33,9 +32,9 @@ abstract class ResponseContext
     /**
      * Stored raw content
      *
-     * @var mixed
+     * @var string|null
      */
-    protected $content;
+    protected $content = null;
 
     /**
      * Response status code
@@ -52,11 +51,20 @@ abstract class ResponseContext
     protected $requestContext = null;
 
     /**
+     * Retrieve ResponseContext's headers
+     *
+     * @var Headers
+     */
+    protected $headers = null;
+
+    /**
      * Get raw result data
      *
      * @param array $options
+     *
+     * @return string
      */
-    abstract public function getRaw(array $options = array());
+    abstract public function getRaw(array $options = array()): string;
 
     /**
      * Get result data as array
@@ -64,7 +72,7 @@ abstract class ResponseContext
      * @param array $options
      * @return array
      */
-    abstract public function getArray(array $options = array());
+    abstract public function getArray(array $options = array()): array;
 
     /**
      * Get result data as object
@@ -76,12 +84,12 @@ abstract class ResponseContext
     /**
      * Checks whether content is valid for the result.
      *
-     * @param mixed $content
+     * @param string $content
      * @param string $error Error is returned here if any
      *
      * @return bool
      */
-    abstract public function isValid($content, &$error = '');
+    abstract public function isValid(string $content, string &$error);
 
     /**
      * String representation of response for debug purposes
@@ -91,16 +99,43 @@ abstract class ResponseContext
     abstract public function __toString();
 
     /**
+     * ResponseContext constructor
+     *
+     * @param string|null $content
+     */
+    public function __construct(string $content = null)
+    {
+        if (!is_null($content)) {
+            $this->setContent($content);
+        }
+
+        $this->headers = new Headers();
+    }
+
+    /**
+     * Retrieve RequestContext's headers
+     *
+     * @return Headers
+     */
+    public function headers(): Headers
+    {
+        return $this->headers;
+    }
+
+    /**
      * Set result content.
      *
-     * @param $content
-     * @return mixed
+     * @param string $content
+     *
+     * @return ResponseContext
      */
-    public function setContent($content)
+    public function setContent(string $content): ResponseContext
     {
         $this->assert($content);
 
         $this->content = $content;
+
+        return $this;
     }
 
     /**
@@ -118,7 +153,7 @@ abstract class ResponseContext
      *
      * @return int
      */
-    public function getHttpStatusCode()
+    public function getHttpStatusCode(): int
     {
         return $this->httpStatusCode;
     }
@@ -126,21 +161,29 @@ abstract class ResponseContext
     /**
      * Set HTTP status code for response
      *
-     * @param int $httpStatusCode
+     * @param int|string $httpStatusCode
+     *
+     * @return ResponseContext
      */
-    public function setHttpStatusCode($httpStatusCode)
+    public function setHttpStatusCode($httpStatusCode): ResponseContext
     {
-        $this->httpStatusCode = $httpStatusCode;
+        $this->httpStatusCode = (int)$httpStatusCode;
+
+        return $this;
     }
 
     /**
      * Set request context that is being used for request
      *
      * @param RequestContext $request
+     *
+     * @return ResponseContext
      */
-    public function setRequestContext(RequestContext $request)
+    public function setRequestContext(RequestContext $request): ResponseContext
     {
         $this->requestContext = $request;
+
+        return $this;
     }
 
     /**
@@ -155,8 +198,10 @@ abstract class ResponseContext
 
     /**
      * Returns if current response context has HTTP error status code set
+     *
+     * @return bool
      */
-    public function hasHttpError()
+    public function hasHttpError(): bool
     {
         if (in_array(floor($this->httpStatusCode / 100), self::$errorCodesRange)) {
             return true;
@@ -168,12 +213,14 @@ abstract class ResponseContext
     /**
      * Makes sure that $content is valid for this AbstractResponseContext instance
      *
-     * @param $content
+     * @param string $content
      *
      * @throws ResponseContextException
      */
-    protected function assert($content)
+    protected function assert(string $content): void
     {
+        $error = '';
+
         if (!$this->isValid($content, $error)) {
             throw new ResponseContextException($error ?: '');
         }
@@ -186,7 +233,7 @@ abstract class ResponseContext
      *
      * @return ResponseContext
      */
-    public static function getByType($type)
+    public static function getByType(string $type): ResponseContext
     {
         switch ($type) {
             case self::RESPONSE_TYPE_JSON:

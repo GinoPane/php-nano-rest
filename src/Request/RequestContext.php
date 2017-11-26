@@ -29,6 +29,8 @@ class RequestContext
     /**
      * Sample content types
      */
+    const CONTENT_TYPE_FORM         = 'multipart/form-data';
+    const CONTENT_TYPE_FORM_URLENCODED  = 'application/x-www-form-urlencoded';
     const CONTENT_TYPE_TEXT_PLAIN   = 'text/plain';
     const CONTENT_TYPE_JSON         = 'application/json';
     const CONTENT_TYPE_JAVASCRIPT   = 'application/javascript';
@@ -115,14 +117,16 @@ class RequestContext
      */
     public function __construct(array $options = array())
     {
+        $this->headers = new Headers();
+
         $uri = '';
         $data = null;
         $method = self::METHOD_GET;
+        $headers = [];
         $charset = "utf-8";
-        $headers = array();
         $contentType = self::CONTENT_TYPE_TEXT_PLAIN;
-        $transportOptions = array();
-        $requestParameters = array();
+        $transportOptions = [];
+        $requestParameters = [];
 
         extract($options, EXTR_IF_EXISTS | EXTR_OVERWRITE);
 
@@ -130,53 +134,43 @@ class RequestContext
             ->setData($data)
             ->setMethod($method)
             ->setCharset($charset)
-            ->setHeaders($headers)
             ->setContentType($contentType)
             ->setTransportOptions($transportOptions)
             ->setRequestParameters($requestParameters);
+
+        $this->headers()->setHeaders($headers);
     }
 
     /**
-     * Set individual header
+     * Retrieve RequestContext's headers
      *
-     * @param $header
-     * @param $data
-     *
-     * @return RequestContext
+     * @return Headers
      */
-    public function setHeader($header, $data): RequestContext
+    public function headers(): Headers
     {
-        $this->headers[$header] = "{$header}: $data";
-
-        return $this;
+        return $this->headers;
     }
 
     /**
-     * Set headers array
-     *
-     * @param array $headers Array of header -> data pairs
-     *
-     * @return RequestContext
-     */
-    public function setHeaders(array $headers = array()): RequestContext
-    {
-        $this->headers = array();
-
-        foreach ($headers as $header => $data) {
-            $this->setHeader($header, $data);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Get all set headers
+     * Get headers prepared for request with Content-type assigned if it was not already set
      *
      * @return array
      */
-    public function getHeaders(): array
+    public function getRequestHeaders(): array
     {
-        return $this->headers;
+        $headers = clone $this->headers();
+
+        if (!$headers->headerExists('Content-type')) {
+            $contentType = $this->getContentType();
+
+            if ($charset = $this->getCharset()) {
+                $contentType .= "; charset={$charset}";
+            }
+
+            $headers->setHeader('Content-type', $contentType);
+        }
+
+        return $headers->getHeadersForRequest();
     }
 
     /**
