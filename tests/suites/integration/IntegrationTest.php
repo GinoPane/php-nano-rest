@@ -140,7 +140,7 @@ class IntegrationTest extends TestCase
         $this->assertNotEmpty($responseArray['headers']);
         $this->assertArrayHasKey('Bar', $responseArray['headers']);
         $this->assertEquals('baz', $responseArray['headers']['Bar']);
-var_dump($responseArray);
+
         $this->assertNotEmpty($responseArray['form']['password']);
         $this->assertEquals('secret', $responseArray['form']['password']);
     }

@@ -13,6 +13,19 @@ use GinoPane\NanoRest\Exceptions\RequestContextException;
  */
 class RequestContext
 {
+
+    /**
+     * Default values for timeouts
+     */
+    const TIMEOUT_DEFAULT               = 10;
+    const CONNECTION_TIMEOUT_DEFAULT    = 5;
+
+    /**
+     * Default values for charsets
+     */
+    const CHARSET_UTF8      = 'UTF-8';
+    const CHARSET_ISO88591  = 'ISO-8859-1';
+
     /**
      * Sample HTTP Methods
      */
@@ -58,21 +71,21 @@ class RequestContext
     /**
      * Default content type for requests
      */
-    private $contentType = '';
+    private $contentType = self::CONTENT_TYPE_TEXT_PLAIN;
 
     /**
      * Default charset for requests
      *
      * @var string
      */
-    private $charset = '';
+    private $charset = self::CHARSET_UTF8;
 
     /**
      * Preferred HTTP method
      *
      * @var string
      */
-    private $method = '';
+    private $method = self::METHOD_GET;
 
     /**
      * List of headers for a request
@@ -93,14 +106,14 @@ class RequestContext
      *
      * @var array
      */
-    private $requestParameters = array();
+    private $requestParameters = [];
 
     /**
      * Options for transport
      *
      * @var array
      */
-    private $transportOptions = array();
+    private $transportOptions = [];
 
     /**
      * URI string for request
@@ -110,35 +123,41 @@ class RequestContext
     private $uri = '';
 
     /**
+     * Address of proxy server
+     *
+     * @var string
+     */
+    private $proxy = '';
+
+    /**
+     * URL prefix
+     *
+     * @var string
+     */
+    private $proxyScript = '';
+
+    /**
+     * Connection timeout
+     *
+     * @var int
+     */
+    private $connectionTimeout = self::CONNECTION_TIMEOUT_DEFAULT;
+
+    /**
+     * General timeout value to be used with the request
+     *
+     * @var
+     */
+    private $timeout = self::TIMEOUT_DEFAULT;
+
+    /**
      * RequestContext constructor
      *
-     * @param array $options Available keys are: 'uri', 'headers', 'data', 'method', 'charset', 'contentType',
-     *                          'requestParameters', 'transportOptions'
+     * @param string $uri
      */
-    public function __construct(array $options = array())
+    public function __construct(string $uri)
     {
-        $this->headers = new Headers();
-
-        $uri = '';
-        $data = null;
-        $method = self::METHOD_GET;
-        $headers = [];
-        $charset = "utf-8";
-        $contentType = self::CONTENT_TYPE_TEXT_PLAIN;
-        $transportOptions = [];
-        $requestParameters = [];
-
-        extract($options, EXTR_IF_EXISTS | EXTR_OVERWRITE);
-
-        $this->setUri($uri)
-            ->setData($data)
-            ->setMethod($method)
-            ->setCharset($charset)
-            ->setContentType($contentType)
-            ->setTransportOptions($transportOptions)
-            ->setRequestParameters($requestParameters);
-
-        $this->headers()->setHeaders($headers);
+        $this->setUri($uri);
     }
 
     /**
@@ -381,14 +400,17 @@ class RequestContext
      */
     public function __toString(): string
     {
-        $headers = $this->getHeaders() ? print_r($this->getHeaders(), true) : "No headers were set";
+        $headers = $this->headers()->getHeadersForRequest()
+            ? print_r($this->headers()->getHeadersForRequest(), true)
+            : "No headers were set";
+
         $data = $this->getData() ? print_r($this->getData(), true) : "No data was set";
+
         $requestParameters = $this->getRequestParameters()
             ? print_r($this->getRequestParameters(), true)
             : "No request parameters were set";
 
         return <<<DEBUG
-        
 ===================        
 Method: {$this->getMethod()}
 URI: {$this->getUri()}

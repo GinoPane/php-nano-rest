@@ -23,34 +23,6 @@ use GinoPane\NanoRest\{
 class NanoRest
 {
     /**
-     * Address of proxy server
-     *
-     * @var string
-     */
-    protected $proxy = '';
-
-    /**
-     * URL prefix
-     *
-     * @var string
-     */
-    protected $proxyScript = '';
-
-    /**
-     * Connection timeout
-     *
-     * @var int
-     */
-    protected $connectionTimeout = 0;
-
-    /**
-     * General timeout value to be used with the request
-     *
-     * @var
-     */
-    protected $timeout = 0;
-
-    /**
      * Default request context
      *
      * @var RequestContext
@@ -283,26 +255,18 @@ class NanoRest
             ? $this->proxyScript . urlencode($context->getRequestUri())
             : $context->getRequestUri();
 
-        if ($context->getMethod()) {
-            switch ($context->getMethod()) {
-                case RequestContext::METHOD_GET:
-                    $curlOptions[CURLOPT_HTTPGET] = 1;
-                    $url .= (strpos($url, '?') === false ? '?' : '') . $requestData;
-                    break;
-                case RequestContext::METHOD_POST:
-                    $curlOptions[CURLOPT_POST] = 1;
-                    $curlOptions[CURLOPT_POSTFIELDS] = $requestData;
-                    break;
-                default:
-                    $curlOptions[CURLOPT_CUSTOMREQUEST] = $context->getMethod();
-                    $curlOptions[CURLOPT_POSTFIELDS] = $requestData;
-            }
-        } else {
-            //If method is unknown, but we have data to send, then just send everything via POST
-            if ($requestData) {
+        switch ($context->getMethod()) {
+            case RequestContext::METHOD_GET:
+                $curlOptions[CURLOPT_HTTPGET] = 1;
+                $url .= (strpos($url, '?') === false ? '?' : '') . $requestData;
+                break;
+            case RequestContext::METHOD_POST:
                 $curlOptions[CURLOPT_POST] = 1;
                 $curlOptions[CURLOPT_POSTFIELDS] = $requestData;
-            }
+                break;
+            default:
+                $curlOptions[CURLOPT_CUSTOMREQUEST] = $context->getMethod();
+                $curlOptions[CURLOPT_POSTFIELDS] = $requestData;
         }
 
         $curlOptions[CURLOPT_URL] = $url;
