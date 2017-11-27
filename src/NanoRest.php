@@ -23,61 +23,11 @@ use GinoPane\NanoRest\{
 class NanoRest
 {
     /**
-     * Default request context
-     *
-     * @var RequestContext
-     */
-    protected $requestContext = null;
-
-    /**
      * Default response context
      *
      * @var ResponseContext
      */
     protected $responseContext = null;
-
-    /**
-     * NanoRest constructor
-     *
-     * @param array $options    Array of options to be set.
-     *                          Supported keys are: 'proxy', 'proxyScript', 'connectionTimeout'
-     */
-    public function __construct(array $options = array())
-    {
-        $proxy = '';
-        $proxyScript = '';
-        $connectionTimeout = 0;
-
-        extract($options, EXTR_IF_EXISTS | EXTR_OVERWRITE);
-
-        $this->proxy = $proxy;
-        $this->proxyScript = $proxyScript;
-        $this->connectionTimeout = $connectionTimeout;
-    }
-
-    /**
-     * Sets current request context
-     *
-     * @param RequestContext $context
-     *
-     * @return $this
-     */
-    public function setRequestContext(RequestContext $context)
-    {
-        $this->requestContext = $context;
-
-        return $this;
-    }
-
-    /**
-     * Returns current request context
-     *
-     * @return RequestContext
-     */
-    public function getRequestContext()
-    {
-        return $this->requestContext ?: new RequestContext();
-    }
 
     /**
      * Sets current request context
@@ -141,31 +91,30 @@ class NanoRest
      *
      * @return resource
      */
-    public function getRequestHandle(RequestContext $context)
+    private function getRequestHandle(RequestContext $context)
     {
         $curlHandle = curl_init();
-        $transportOptions = $this->processTransportOptions($context);
 
-        $defaults = array(
+        $defaults = [
+            CURLOPT_NOSIGNAL        => 1,
+            CURLOPT_ENCODING        => "",
+            CURLOPT_USERAGENT       => "php-nano-rest",
             CURLOPT_HEADER          => true,
-            CURLOPT_HTTPHEADER      => array_values(
-                $context->getRequestHeaders() +
-                $this->getRequestContext()->getRequestHeaders()
-            ),
+            CURLOPT_HTTPHEADER      => array_values($context->getRequestHeaders()),
             CURLOPT_SSL_VERIFYPEER  => false,
             CURLOPT_SSL_VERIFYHOST  => false,
-            CURLOPT_CONNECTTIMEOUT  => $this->connectionTimeout,
+            CURLOPT_CONNECTTIMEOUT  => $context->getConnectionTimeout(),
             CURLOPT_RETURNTRANSFER  => true,
-            CURLOPT_TIMEOUT         => $this->timeout
-        );
+            CURLOPT_TIMEOUT         => $context->getTimeout()
+        ];
 
-        if (!is_null($this->proxy)) {
-            $defaults[CURLOPT_PROXY] = $this->proxy;
+        if (!is_null($context->getProxy())) {
+            $defaults[CURLOPT_PROXY] = $context->getProxy();
         }
 
         $dataAndMethodOptions = $this->getRequestDataAndMethodOptions($context);
 
-        curl_setopt_array($curlHandle, $transportOptions + $defaults + $dataAndMethodOptions);
+        curl_setopt_array($curlHandle, $context->getCurlOptions() + $defaults + $dataAndMethodOptions);
 
         return $curlHandle;
     }
@@ -179,7 +128,7 @@ class NanoRest
      *
      * @return mixed
      */
-    public function executeRequestHandle($curlHandle)
+    private function executeRequestHandle($curlHandle)
     {
         curl_setopt($curlHandle, CURLOPT_VERBOSE, true);
         $verbose = fopen('php://temp', 'w+');
@@ -214,32 +163,6 @@ class NanoRest
     }
 
     /**
-     * Extracts transport options from request context and returns an array with options left unprocessed
-     *
-     * @param RequestContext $context
-     *
-     * @return array
-     */
-    private function processTransportOptions(RequestContext $context)
-    {
-        $transportOptions = $context->getTransportOptions();
-
-        if (isset($transportOptions['timeout'])) {
-            $this->timeout = $transportOptions['timeout'];
-
-            unset($transportOptions['timeout']);
-        }
-
-        if (isset($transportOptions['connectionTimeout'])) {
-            $this->connectionTimeout = $transportOptions['connectionTimeout'];
-
-            unset($transportOptions['connectionTimeout']);
-        }
-
-        return $transportOptions;
-    }
-
-    /**
      * @param RequestContext $context
      *
      * @return array
@@ -251,8 +174,8 @@ class NanoRest
         $requestData = $context->getData();
         $requestData = is_array($requestData) ? http_build_query($requestData) : $requestData;
 
-        $url = $this->proxyScript
-            ? $this->proxyScript . urlencode($context->getRequestUri())
+        $url = $context->getProxyScript()
+            ? ($context->getProxyScript() . urlencode($context->getRequestUri()))
             : $context->getRequestUri();
 
         switch ($context->getMethod()) {

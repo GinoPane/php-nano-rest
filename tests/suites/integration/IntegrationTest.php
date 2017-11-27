@@ -24,17 +24,13 @@ class IntegrationTest extends TestCase
 
         $nanoRest->setResponseContext(new JsonResponseContext());
 
-        $requestContext = new RequestContext(
-            [
-                'uri' => 'http://httpbin.org/get',
-                'requestParameters' => [
-                    'foo' => 'bar'
-                ],
-                'headers' => [
-                    'bar' => 'baz'
-                ]
-            ]
-        );
+        $requestContext = (new RequestContext('http://httpbin.org/get'))
+            ->setRequestParameters([
+                'foo' => 'bar'
+            ])
+            ->setHeaders([
+                'bar' => 'baz'
+            ]);
 
         /** @var ResponseContext $responseContext */
         $responseContext = $nanoRest->sendRequest($requestContext);
@@ -63,20 +59,16 @@ class IntegrationTest extends TestCase
 
         $nanoRest->setResponseContext(new JsonResponseContext());
 
-        $requestContext = new RequestContext(
-            [
-                'uri' => 'http://httpbin.org/post',
-                'method' => RequestContext::METHOD_POST,
-                'requestParameters' => [
-                    'foo' => 'bar'
-                ],
-                'headers' => [
-                    'bar' => 'baz'
-                ],
-                'data' => 'Hello world!',
-                'contentType' => RequestContext::CONTENT_TYPE_TEXT_PLAIN //being set by default
-            ]
-        );
+        $requestContext = (new RequestContext('http://httpbin.org/post'))
+            ->setMethod(RequestContext::METHOD_POST)
+            ->setRequestParameters([
+                'foo' => 'bar'
+            ])
+            ->setData('Hello world!')
+            ->setContentType(RequestContext::CONTENT_TYPE_TEXT_PLAIN) //being set by default
+            ->setHeaders([
+                'bar' => 'baz'
+            ]);
 
         /** @var ResponseContext $responseContext */
         $responseContext = $nanoRest->sendRequest($requestContext);
@@ -108,22 +100,15 @@ class IntegrationTest extends TestCase
 
         $nanoRest->setResponseContext(new JsonResponseContext());
 
-        $requestContext = new RequestContext(
-            [
-                'uri' => 'http://httpbin.org/post',
-                'method' => RequestContext::METHOD_POST,
-                'requestParameters' => [
-                    'foo' => 'bar'
-                ],
-                'headers' => [
-                    'bar' => 'baz'
-                ],
-                'data' => [
-                    'password' => 'secret'
-                ],
-                'contentType' => RequestContext::CONTENT_TYPE_FORM_URLENCODED
-            ]
-        );
+        $requestContext = (new RequestContext('http://httpbin.org/post'))
+            ->setMethod(RequestContext::METHOD_POST)
+            ->setRequestParameters([
+                'foo' => 'bar'
+            ])->setHeaders([
+                'bar' => 'baz'
+            ])->setData([
+                'password' => 'secret'
+            ])->setContentType(RequestContext::CONTENT_TYPE_FORM_URLENCODED);
 
         /** @var ResponseContext $responseContext */
         $responseContext = $nanoRest->sendRequest($requestContext);

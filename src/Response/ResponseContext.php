@@ -3,7 +3,7 @@
 namespace GinoPane\NanoRest\Response;
 
 use GinoPane\NanoRest\{
-    Exceptions\ResponseContextException, Request\RequestContext, Supplemental\Headers
+    Exceptions\ResponseContextException, Request\RequestContext, Supplemental\HeadersProperty
 };
 
 /**
@@ -51,13 +51,6 @@ abstract class ResponseContext
     protected $requestContext = null;
 
     /**
-     * Retrieve ResponseContext's headers
-     *
-     * @var Headers
-     */
-    protected $headers = null;
-
-    /**
      * Get raw result data
      *
      * @param array $options
@@ -98,6 +91,8 @@ abstract class ResponseContext
      */
     abstract public function __toString();
 
+    use HeadersProperty;
+
     /**
      * ResponseContext constructor
      *
@@ -108,18 +103,6 @@ abstract class ResponseContext
         if (!is_null($content)) {
             $this->setContent($content);
         }
-
-        $this->headers = new Headers();
-    }
-
-    /**
-     * Retrieve RequestContext's headers
-     *
-     * @return Headers
-     */
-    public function headers(): Headers
-    {
-        return $this->headers;
     }
 
     /**

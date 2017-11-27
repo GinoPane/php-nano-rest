@@ -2,8 +2,8 @@
 
 namespace GinoPane\NanoRest\Request;
 
-use GinoPane\NanoRest\Supplemental\Headers;
 use GinoPane\NanoRest\Exceptions\RequestContextException;
+use GinoPane\NanoRest\Supplemental\HeadersProperty;
 
 /**
  * Class RequestContext
@@ -13,7 +13,6 @@ use GinoPane\NanoRest\Exceptions\RequestContextException;
  */
 class RequestContext
 {
-
     /**
      * Default values for timeouts
      */
@@ -88,13 +87,6 @@ class RequestContext
     private $method = self::METHOD_GET;
 
     /**
-     * List of headers for a request
-     *
-     * @var Headers
-     */
-    private $headers = null;
-
-    /**
      * Generic data to be sent
      *
      * @var mixed
@@ -150,24 +142,30 @@ class RequestContext
      */
     private $timeout = self::TIMEOUT_DEFAULT;
 
+    use HeadersProperty;
+
     /**
      * RequestContext constructor
      *
      * @param string $uri
      */
-    public function __construct(string $uri)
+    public function __construct(string $uri = '')
     {
         $this->setUri($uri);
     }
 
     /**
-     * Retrieve RequestContext's headers
+     * Fluent setter for consistency with other methods
      *
-     * @return Headers
+     * @param array $headers
+     *
+     * @return RequestContext
      */
-    public function headers(): Headers
+    public function setHeaders(array $headers = []): RequestContext
     {
-        return $this->headers;
+        $this->headers()->setHeaders($headers);
+
+        return $this;
     }
 
     /**
@@ -303,7 +301,7 @@ class RequestContext
      *
      * @return RequestContext
      */
-    public function setRequestParameters(array $requestParameters = array()): RequestContext
+    public function setRequestParameters(array $requestParameters = []): RequestContext
     {
         $this->requestParameters = $requestParameters;
 
@@ -311,40 +309,50 @@ class RequestContext
     }
 
     /**
-     * Get transport options
+     * Get CURL options
      *
      * @return array
      */
-    public function getTransportOptions(): array
+    public function getCurlOptions(): array
     {
         return $this->transportOptions;
     }
 
     /**
-     * Set a single transport option for context
+     * Set a single CURL option for context
      *
-     * @param $optionName
-     * @param $optionValue
+     * @param int $optionName
+     * @param mixed $optionValue
+     *
+     * @throws RequestContextException
      *
      * @return RequestContext
      */
-    public function setTransportOption($optionName, $optionValue): RequestContext
+    public function setCurlOption(int $optionName, $optionValue): RequestContext
     {
-        $this->transportOptions[$optionName] = $optionValue;
+        if (@curl_setopt(curl_init(), $optionName, $optionValue)) {
+            $this->transportOptions[$optionName] = $optionValue;
+        } else {
+            throw new RequestContextException(
+                "Curl option is invalid: '$optionName' => " . var_export($optionValue, true)
+            );
+        }
 
         return $this;
     }
 
     /**
-     * Set an array of transport options for context
+     * Set an array of CURL options for context
      *
      * @param array $transportOptions
      *
      * @return RequestContext
      */
-    public function setTransportOptions(array $transportOptions): RequestContext
+    public function setCurlOptions(array $transportOptions): RequestContext
     {
-        $this->transportOptions = $transportOptions;
+        foreach ($transportOptions as $name => $value) {
+            $this->setCurlOption($name, $value);
+        }
 
         return $this;
     }
@@ -392,6 +400,84 @@ class RequestContext
 
         return $this;
     }
+
+    /**
+     * @return string
+     */
+    public function getProxy(): string
+    {
+        return $this->proxy;
+    }
+
+    /**
+     * @param string $proxy
+     * @return RequestContext
+     */
+    public function setProxy(string $proxy): RequestContext
+    {
+        $this->proxy = $proxy;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getProxyScript(): string
+    {
+        return $this->proxyScript;
+    }
+
+    /**
+     * @param string $proxyScript
+     *
+     * @return RequestContext
+     */
+    public function setProxyScript(string $proxyScript): RequestContext
+    {
+        $this->proxyScript = $proxyScript;
+        return $this;
+    }
+
+    /**
+     * @return int|float
+     */
+    public function getConnectionTimeout()
+    {
+        return $this->connectionTimeout;
+    }
+
+    /**
+     * @param int|float $connectionTimeout
+     *
+     * @return RequestContext
+     */
+    public function setConnectionTimeout($connectionTimeout): RequestContext
+    {
+        $this->connectionTimeout = $connectionTimeout;
+
+        return $this;
+    }
+
+    /**
+     * @return int|float
+     */
+    public function getTimeout()
+    {
+        return $this->timeout;
+    }
+
+    /**
+     * @param int|float $timeout
+     *
+     * @return RequestContext
+     */
+    public function setTimeout($timeout): RequestContext
+    {
+        $this->timeout = $timeout;
+
+        return $this;
+    }
+
 
     /**
      * Get string representation of RequestContext object
