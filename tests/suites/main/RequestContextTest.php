@@ -199,7 +199,7 @@ No request parameters were set
 ===================
 EXPECTED;
 
-        $this->assertEquals($expected, (string)$context);
+        $this->assertEquals(str_replace("\r\n", "\n", $expected), str_replace("\r\n", "\n", (string)$context));
 
         $context->setUri('http://example.com');
         $context->headers()->setHeaders([]);
@@ -231,7 +231,7 @@ Array
 ===================
 EXPECTED;
 
-        $this->assertEquals($expected, (string)$context);
+        $this->assertEquals(str_replace("\r\n", "\n", $expected), str_replace("\r\n", "\n", (string)$context));
     }
 
     /**

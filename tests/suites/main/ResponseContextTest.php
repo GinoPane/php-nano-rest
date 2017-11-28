@@ -84,12 +84,13 @@ class ResponseContextTest extends TestCase
     {
         $context = new JsonResponseContext('{"content":["a","b"]}');
 
-        $this->assertEquals('{
+        $expected = '{
     "content": [
         "a",
         "b"
     ]
-}', (string)$context);
+}';
+        $this->assertEquals(str_replace("\r\n", "\n", $expected), (string)$context);
 
         $context = new DummyResponseContext('content');
 

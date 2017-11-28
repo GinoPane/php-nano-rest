@@ -2,11 +2,10 @@
 
 namespace GinoPane\NanoRest;
 
-use GinoPane\NanoRest\Exceptions\TransportException;
-use GinoPane\NanoRest\Response\JsonResponseContext;
-use GinoPane\NanoRest\Response\ResponseContext;
 use PHPUnit\Framework\TestCase;
 use GinoPane\NanoRest\Request\RequestContext;
+use GinoPane\NanoRest\Response\ResponseContext;
+use GinoPane\NanoRest\Exceptions\TransportException;
 
 /**
  * Integration tests for NanoRest using http://httpbin.org
@@ -165,7 +164,7 @@ class IntegrationTest extends TestCase
 
             $this->fail('Exception was not thrown!');
         } catch (TransportException $exception) {
-            $this->assertEquals("* Rebuilt URL to: http://idont.exist/\n* Could not resolve host: idont.exist\n* Closing connection 0\n", $exception->getData());
+            $this->assertNotFalse(stripos($exception->getData(), "* Could not resolve host: idont.exist"));
         }
     }
 }
