@@ -1,6 +1,6 @@
 {
     "name": "gino-pane/nano-rest",
-    "description": "Template composer package for creating other packages",
+    "description": "Minimalistic and self-contained cURL HTTP REST client for PHP",
     "homepage": "http://github.com/GinoPane/PhpNanoRest",
     "keywords": [
         "http client",
