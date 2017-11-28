@@ -31,8 +31,8 @@
 	<logging>
 		<log type="coverage-html"
 			 target="./build/output/coverage/html"
-			 lowUpperBound="35"
-			 highLowerBound="70"/>
+			 lowUpperBound="50"
+			 highLowerBound="90"/>
 		<log type="coverage-text"
 			 target="php://stdout"
 			 showUncoveredFiles="true"/>

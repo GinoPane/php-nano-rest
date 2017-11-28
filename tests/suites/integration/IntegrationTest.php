@@ -157,8 +157,8 @@ class IntegrationTest extends TestCase
 
         $requestContext = (new RequestContext("http://idont.exist"))
             ->setMethod(RequestContext::METHOD_PUT)
-            ->setConnectionTimeout(1)
-            ->setTimeout(3);
+            ->setConnectionTimeout(0.5)
+            ->setTimeout(1.5);
 
         try {
             $nanoRest->sendRequest($requestContext);
