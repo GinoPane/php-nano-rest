@@ -44,7 +44,7 @@ class Headers
     }
 
     /**
-     * Set headers array
+     * Set headers array. Old headers will be removed
      *
      * @param array $headers Array of header -> data pairs
      *
@@ -54,6 +54,22 @@ class Headers
     {
         $this->headers = array();
 
+        foreach ($headers as $header => $data) {
+            $this->setHeader((string)$header, (string)$data);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Merge headers array. Old headers will be preserved or replaced
+     *
+     * @param array $headers Array of header -> data pairs
+     *
+     * @return Headers
+     */
+    public function mergeHeaders(array $headers = []): Headers
+    {
         foreach ($headers as $header => $data) {
             $this->setHeader((string)$header, (string)$data);
         }

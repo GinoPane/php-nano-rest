@@ -105,7 +105,7 @@ class RequestContext
      *
      * @var array
      */
-    private $transportOptions = [];
+    private $curlOptions = [];
 
     /**
      * URI string for request
@@ -120,13 +120,6 @@ class RequestContext
      * @var string
      */
     private $proxy = '';
-
-    /**
-     * URL prefix
-     *
-     * @var string
-     */
-    private $proxyScript = '';
 
     /**
      * Connection timeout
@@ -151,7 +144,9 @@ class RequestContext
      */
     public function __construct(string $uri = '')
     {
-        $this->setUri($uri);
+        if ($uri) {
+            $this->setUri($uri);
+        }
     }
 
     /**
@@ -178,13 +173,13 @@ class RequestContext
         $headers = clone $this->headers();
 
         if (!$headers->headerExists('Content-type')) {
-            $contentType = $this->getContentType();
+            if ($contentType = $this->getContentType()) {
+                if (($charset = $this->getCharset()) && (stripos($contentType, 'charset=') === false)) {
+                    $contentType .= "; charset={$charset}";
+                }
 
-            if ($charset = $this->getCharset()) {
-                $contentType .= "; charset={$charset}";
+                $headers->setHeader('Content-type', $contentType);
             }
-
-            $headers->setHeader('Content-type', $contentType);
         }
 
         return $headers->getHeadersForRequest();
@@ -235,6 +230,8 @@ class RequestContext
      */
     public function setMethod(string $method): RequestContext
     {
+        $method = strtoupper($method);
+
         if (!in_array($method, self::$availableMethods)) {
             throw new RequestContextException('Supplied HTTP method is not supported');
         }
@@ -263,6 +260,8 @@ class RequestContext
      */
     public function setUri(string $uri): RequestContext
     {
+        $this->assertValidUri($uri);
+
         $this->uri = $uri;
 
         return $this;
@@ -315,7 +314,7 @@ class RequestContext
      */
     public function getCurlOptions(): array
     {
-        return $this->transportOptions;
+        return $this->curlOptions;
     }
 
     /**
@@ -331,7 +330,7 @@ class RequestContext
     public function setCurlOption(int $optionName, $optionValue): RequestContext
     {
         if (@curl_setopt(curl_init(), $optionName, $optionValue)) {
-            $this->transportOptions[$optionName] = $optionValue;
+            $this->curlOptions[$optionName] = $optionValue;
         } else {
             throw new RequestContextException(
                 "Curl option is invalid: '$optionName' => " . var_export($optionValue, true)
@@ -342,15 +341,17 @@ class RequestContext
     }
 
     /**
-     * Set an array of CURL options for context
+     * Set an array of CURL options for context. Please note, that old options would be removed or overwritten
      *
-     * @param array $transportOptions
+     * @param array $curlOptions
      *
      * @return RequestContext
      */
-    public function setCurlOptions(array $transportOptions): RequestContext
+    public function setCurlOptions(array $curlOptions = []): RequestContext
     {
-        foreach ($transportOptions as $name => $value) {
+        $this->curlOptions = [];
+
+        foreach ($curlOptions as $name => $value) {
             $this->setCurlOption($name, $value);
         }
 
@@ -411,30 +412,17 @@ class RequestContext
 
     /**
      * @param string $proxy
+     *
+     * @throws RequestContextException
+     *
      * @return RequestContext
      */
     public function setProxy(string $proxy): RequestContext
     {
+        $this->assertValidUri($proxy);
+
         $this->proxy = $proxy;
-        return $this;
-    }
 
-    /**
-     * @return string
-     */
-    public function getProxyScript(): string
-    {
-        return $this->proxyScript;
-    }
-
-    /**
-     * @param string $proxyScript
-     *
-     * @return RequestContext
-     */
-    public function setProxyScript(string $proxyScript): RequestContext
-    {
-        $this->proxyScript = $proxyScript;
         return $this;
     }
 
@@ -486,8 +474,8 @@ class RequestContext
      */
     public function __toString(): string
     {
-        $headers = $this->headers()->getHeadersForRequest()
-            ? print_r($this->headers()->getHeadersForRequest(), true)
+        $headers = $this->getRequestHeaders()
+            ? print_r($this->getRequestHeaders(), true)
             : "No headers were set";
 
         $data = $this->getData() ? print_r($this->getData(), true) : "No data was set";
@@ -497,9 +485,9 @@ class RequestContext
             : "No request parameters were set";
 
         return <<<DEBUG
-===================        
+===================
 Method: {$this->getMethod()}
-URI: {$this->getUri()}
+Request URI: {$this->getRequestUri()}
 ===================
 Headers:
 
@@ -513,7 +501,20 @@ Request Parameters:
 
 {$requestParameters}
 ===================
-
 DEBUG;
+    }
+
+    /**
+     * Throw exception on invalid URI
+     *
+     * @param string $uri
+     *
+     * @throws RequestContextException
+     */
+    private function assertValidUri(string $uri): void
+    {
+        if (!(filter_var($uri, FILTER_VALIDATE_URL) || filter_var($uri, FILTER_VALIDATE_IP))) {
+            throw new RequestContextException("Failed to set invalid URI: $uri");
+        }
     }
 }

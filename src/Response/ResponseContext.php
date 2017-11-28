@@ -55,14 +55,15 @@ abstract class ResponseContext
      *
      * @param array $options
      *
-     * @return string
+     * @return string|null
      */
-    abstract public function getRaw(array $options = array()): string;
+    abstract public function getRaw(array $options = array()): ?string;
 
     /**
      * Get result data as array
      *
      * @param array $options
+     *
      * @return array
      */
     abstract public function getArray(array $options = array()): array;
@@ -71,18 +72,21 @@ abstract class ResponseContext
      * Get result data as object
      *
      * @param array $options
+     *
+     * @return object|null
      */
     abstract public function getObject(array $options = array());
 
     /**
-     * Checks whether content is valid for the result.
+     * Makes sure that $content is valid for this AbstractResponseContext instance
      *
      * @param string $content
-     * @param string $error Error is returned here if any
+     *
+     * @throws ResponseContextException
      *
      * @return bool
      */
-    abstract public function isValid(string $content, string &$error);
+    abstract protected function assertIsValid(string $content): bool;
 
     /**
      * String representation of response for debug purposes
@@ -114,7 +118,7 @@ abstract class ResponseContext
      */
     public function setContent(string $content): ResponseContext
     {
-        $this->assert($content);
+        $this->assertIsValid($content);
 
         $this->content = $content;
 
@@ -122,11 +126,11 @@ abstract class ResponseContext
     }
 
     /**
-     * Get result's content.
+     * Get response content
      *
-     * @inheritdoc
+     * @return null|string
      */
-    public function getContent()
+    public function getContent(): ?string
     {
         return $this->content;
     }
@@ -194,35 +198,20 @@ abstract class ResponseContext
     }
 
     /**
-     * Makes sure that $content is valid for this AbstractResponseContext instance
-     *
-     * @param string $content
-     *
-     * @throws ResponseContextException
-     */
-    protected function assert(string $content): void
-    {
-        $error = '';
-
-        if (!$this->isValid($content, $error)) {
-            throw new ResponseContextException($error ?: '');
-        }
-    }
-
-    /**
      * Create response context instance
      *
      * @param string $type
+     * @param string|null $content
      *
      * @return ResponseContext
      */
-    public static function getByType(string $type): ResponseContext
+    public static function getByType(string $type, string $content = null): ResponseContext
     {
         switch ($type) {
             case self::RESPONSE_TYPE_JSON:
-                return new JsonResponseContext();
+                return new JsonResponseContext($content);
             default:
-                return new DummyResponseContext();
+                return new DummyResponseContext($content);
         }
     }
 }

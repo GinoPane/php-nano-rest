@@ -16,9 +16,9 @@ class DummyResponseContext extends ResponseContext
      *
      * @param array $options
      *
-     * @return string
+     * @return string|null
      */
-    public function getRaw(array $options = array()): string
+    public function getRaw(array $options = array()): ?string
     {
         return $this->content;
     }
@@ -40,7 +40,7 @@ class DummyResponseContext extends ResponseContext
      *
      * @param array $options
      *
-     * @return mixed
+     * @return object
      */
     public function getObject(array $options = array())
     {
@@ -58,14 +58,13 @@ class DummyResponseContext extends ResponseContext
     }
 
     /**
-     * Dummy test, everything is valid for this context
+     * Makes sure that $content is valid for this AbstractResponseContext instance
      *
      * @param string $content
-     * @param string $error
      *
      * @return bool
      */
-    public function isValid(string $content, string &$error): bool
+    protected function assertIsValid(string $content): bool
     {
         return true;
     }

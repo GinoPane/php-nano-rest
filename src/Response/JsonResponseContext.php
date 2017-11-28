@@ -2,6 +2,8 @@
 
 namespace GinoPane\NanoRest\Response;
 
+use GinoPane\NanoRest\Exceptions\ResponseContextException;
+
 /**
  * Class JsonResponseContext
  *
@@ -16,11 +18,11 @@ class JsonResponseContext extends ResponseContext
      *
      * @param array $options
      *
-     * @return string
+     * @return string|null
      */
-    public function getRaw(array $options = array()): string
+    public function getRaw(array $options = array()): ?string
     {
-        return $this->content;
+        return $this->getContent();
     }
 
     /**
@@ -32,6 +34,12 @@ class JsonResponseContext extends ResponseContext
      */
     public function getArray(array $options = array()): array
     {
+        $content = $this->getContent();
+
+        if (is_null($content)) {
+            return (array)$content;
+        }
+
         return json_decode($this->content, true);
     }
 
@@ -44,6 +52,12 @@ class JsonResponseContext extends ResponseContext
      */
     public function getObject(array $options = array())
     {
+        $content = $this->getContent();
+
+        if (is_null($content)) {
+            return (object)$content;
+        }
+
         return json_decode($this->content, false);
     }
 
@@ -58,20 +72,22 @@ class JsonResponseContext extends ResponseContext
     }
 
     /**
-     * Checks whether the passed JSON string is valid
+     * Makes sure that $content is valid for this AbstractResponseContext instance
      *
      * @param string $content
-     * @param string $error
+     *
+     * @throws ResponseContextException
+     *
      * @return bool
      */
-    public function isValid(string $content, string &$error)
+    protected function assertIsValid(string $content): bool
     {
         @json_decode($content);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             $error = json_last_error_msg();
 
-            return false;
+            throw new ResponseContextException($error);
         }
 
         return true;

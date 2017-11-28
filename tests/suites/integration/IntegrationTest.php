@@ -2,10 +2,11 @@
 
 namespace GinoPane\NanoRest;
 
+use GinoPane\NanoRest\Exceptions\TransportException;
 use GinoPane\NanoRest\Response\JsonResponseContext;
+use GinoPane\NanoRest\Response\ResponseContext;
 use PHPUnit\Framework\TestCase;
 use GinoPane\NanoRest\Request\RequestContext;
-use GinoPane\NanoRest\Response\ResponseContext;
 
 /**
  * Integration tests for NanoRest using http://httpbin.org
@@ -22,9 +23,9 @@ class IntegrationTest extends TestCase
     {
         $nanoRest = new NanoRest();
 
-        $nanoRest->setResponseContext(new JsonResponseContext());
+        $nanoRest->setResponseContext(ResponseContext::getByType(ResponseContext::RESPONSE_TYPE_JSON));
 
-        $requestContext = (new RequestContext('http://httpbin.org/get'))
+        $requestContext = (new RequestContext('https://httpbin.org/get'))
             ->setRequestParameters([
                 'foo' => 'bar'
             ])
@@ -32,11 +33,13 @@ class IntegrationTest extends TestCase
                 'bar' => 'baz'
             ]);
 
-        /** @var ResponseContext $responseContext */
         $responseContext = $nanoRest->sendRequest($requestContext);
 
         $this->assertEquals(200, $responseContext->getHttpStatusCode());
         $this->assertFalse($responseContext->hasHttpError());
+
+        $this->assertTrue($responseContext->getRequestContext() instanceof RequestContext);
+        $this->assertEquals('https://httpbin.org/get', $responseContext->getRequestContext()->getUri());
 
         $responseArray = $responseContext->getArray();
 
@@ -57,7 +60,7 @@ class IntegrationTest extends TestCase
     {
         $nanoRest = new NanoRest();
 
-        $nanoRest->setResponseContext(new JsonResponseContext());
+        $nanoRest->setResponseContext(ResponseContext::getByType(ResponseContext::RESPONSE_TYPE_JSON));
 
         $requestContext = (new RequestContext('http://httpbin.org/post'))
             ->setMethod(RequestContext::METHOD_POST)
@@ -70,7 +73,6 @@ class IntegrationTest extends TestCase
                 'bar' => 'baz'
             ]);
 
-        /** @var ResponseContext $responseContext */
         $responseContext = $nanoRest->sendRequest($requestContext);
 
         $this->assertEquals(200, $responseContext->getHttpStatusCode());
@@ -98,7 +100,7 @@ class IntegrationTest extends TestCase
     {
         $nanoRest = new NanoRest();
 
-        $nanoRest->setResponseContext(new JsonResponseContext());
+        $nanoRest->setResponseContext(ResponseContext::getByType(ResponseContext::RESPONSE_TYPE_JSON));
 
         $requestContext = (new RequestContext('http://httpbin.org/post'))
             ->setMethod(RequestContext::METHOD_POST)
@@ -110,7 +112,6 @@ class IntegrationTest extends TestCase
                 'password' => 'secret'
             ])->setContentType(RequestContext::CONTENT_TYPE_FORM_URLENCODED);
 
-        /** @var ResponseContext $responseContext */
         $responseContext = $nanoRest->sendRequest($requestContext);
 
         $this->assertEquals(200, $responseContext->getHttpStatusCode());
@@ -128,5 +129,43 @@ class IntegrationTest extends TestCase
 
         $this->assertNotEmpty($responseArray['form']['password']);
         $this->assertEquals('secret', $responseArray['form']['password']);
+    }
+
+    /**
+     * Test that request will fail for invalid endpoint
+     */
+    public function testFailingRequest()
+    {
+        $this->expectException(TransportException::class);
+
+        $nanoRest = new NanoRest();
+
+        $requestContext = (new RequestContext("http://idont.exist"))
+            ->setMethod(RequestContext::METHOD_PUT)
+            ->setConnectionTimeout(1)
+            ->setTimeout(3);
+
+        $nanoRest->sendRequest($requestContext);
+    }
+
+    /**
+     * Test that request will fail for invalid endpoint
+     */
+    public function testFailingRequestVerboseOutput()
+    {
+        $nanoRest = new NanoRest();
+
+        $requestContext = (new RequestContext("http://idont.exist"))
+            ->setMethod(RequestContext::METHOD_PUT)
+            ->setConnectionTimeout(1)
+            ->setTimeout(3);
+
+        try {
+            $nanoRest->sendRequest($requestContext);
+
+            $this->fail('Exception was not thrown!');
+        } catch (TransportException $exception) {
+            $this->assertEquals("* Rebuilt URL to: http://idont.exist/\n* Could not resolve host: idont.exist\n* Closing connection 0\n", $exception->getData());
+        }
     }
 }

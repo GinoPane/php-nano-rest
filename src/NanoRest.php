@@ -1,14 +1,12 @@
 <?php
-/**
- *
- */
 
 namespace GinoPane\NanoRest;
+
+define('ROOT_DIRECTORY', dirname(dirname(__FILE__)));
 
 use GinoPane\NanoRest\{
     Request\RequestContext,
     Response\ResponseContext,
-    Response\DummyResponseContext,
     Exceptions\TransportException
 };
 
@@ -50,7 +48,7 @@ class NanoRest
      */
     public function getResponseContext()
     {
-        return $this->responseContext ?: new DummyResponseContext();
+        return $this->responseContext ?: ResponseContext::getByType('');
     }
 
     /**
@@ -96,17 +94,18 @@ class NanoRest
         $curlHandle = curl_init();
 
         $defaults = [
-            CURLOPT_NOSIGNAL        => 1,
             CURLOPT_ENCODING        => "",
             CURLOPT_USERAGENT       => "php-nano-rest",
             CURLOPT_HEADER          => true,
             CURLOPT_HTTPHEADER      => array_values($context->getRequestHeaders()),
-            CURLOPT_SSL_VERIFYPEER  => false,
-            CURLOPT_SSL_VERIFYHOST  => false,
-            CURLOPT_CONNECTTIMEOUT  => $context->getConnectionTimeout(),
             CURLOPT_RETURNTRANSFER  => true,
-            CURLOPT_TIMEOUT         => $context->getTimeout()
+
+            CURLOPT_NOSIGNAL        => 1,
+            CURLOPT_CONNECTTIMEOUT  => $context->getConnectionTimeout(),
+            CURLOPT_TIMEOUT         => $context->getTimeout(),
         ];
+
+        $defaults += $this->getCurlSslSettings();
 
         if (!is_null($context->getProxy())) {
             $defaults[CURLOPT_PROXY] = $context->getProxy();
@@ -117,6 +116,20 @@ class NanoRest
         curl_setopt_array($curlHandle, $context->getCurlOptions() + $defaults + $dataAndMethodOptions);
 
         return $curlHandle;
+    }
+
+    /**
+     * Get SSL settings for CURL handler
+     *
+     * @return array
+     */
+    private function getCurlSslSettings(): array
+    {
+        return [
+            CURLOPT_SSL_VERIFYPEER  => true,
+            CURLOPT_SSL_VERIFYHOST  => 2,
+            CURLOPT_CAINFO          => ROOT_DIRECTORY . DIRECTORY_SEPARATOR . 'cacert.pem'
+        ];
     }
 
     /**
@@ -134,7 +147,7 @@ class NanoRest
         $verbose = fopen('php://temp', 'w+');
         curl_setopt($curlHandle, CURLOPT_STDERR, $verbose);
 
-        list($headers, $response) = explode("\r\n\r\n", curl_exec($curlHandle), 2);
+        @list($headers, $response) = explode("\r\n\r\n", curl_exec($curlHandle), 2);
 
         $error = curl_error($curlHandle);
         $errorNumber = curl_errno($curlHandle);
@@ -174,9 +187,7 @@ class NanoRest
         $requestData = $context->getData();
         $requestData = is_array($requestData) ? http_build_query($requestData) : $requestData;
 
-        $url = $context->getProxyScript()
-            ? ($context->getProxyScript() . urlencode($context->getRequestUri()))
-            : $context->getRequestUri();
+        $url = $context->getRequestUri();
 
         switch ($context->getMethod()) {
             case RequestContext::METHOD_GET:

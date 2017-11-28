@@ -34,6 +34,37 @@ class HeadersTest extends TestCase
         $this->assertEquals('bar', $headers->getHeader('foo'));
     }
 
+    public function testIfHeadersCanBeSetAndMerged()
+    {
+        $headers = new Headers(['foo' => 'bar']);
+
+        $storedHeaders = $headers->getHeaders();
+
+        $this->assertArrayHasKey('foo', $storedHeaders);
+        $this->assertTrue($headers->headerExists('foo'));
+        $this->assertEquals('bar', $headers->getHeader('foo'));
+
+        $headers->setHeaders(['bar' => 'baz']);
+
+        $storedHeaders = $headers->getHeaders();
+
+        $this->assertArrayNotHasKey('foo', $storedHeaders);
+        $this->assertArrayHasKey('bar', $storedHeaders);
+        $this->assertTrue($headers->headerExists('bar'));
+        $this->assertEquals('baz', $headers->getHeader('bar'));
+
+        $headers->mergeHeaders(['foo' => 'bar']);
+
+        $storedHeaders = $headers->getHeaders();
+
+        $this->assertArrayHasKey('foo', $storedHeaders);
+        $this->assertArrayHasKey('bar', $storedHeaders);
+        $this->assertTrue($headers->headerExists('foo'));
+        $this->assertTrue($headers->headerExists('bar'));
+        $this->assertEquals('bar', $headers->getHeader('foo'));
+        $this->assertEquals('baz', $headers->getHeader('bar'));
+    }
+
     /**
      * @dataProvider getDataForHeadersParsing
      *
