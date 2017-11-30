@@ -41,5 +41,101 @@ or just put a new dependency in your existing `composer.json` and run `composer 
 Usage
 =====
 
+Project's philosophy implies usage of `RequestContext` and `ResponseContext` objects. `RequestContext` aggregates request settings
+whilst `ResponseContext` contains response data.
+
+Response context can be typed. Currently only `JsonResponseContext` available for JSON responses. Response type must be set explicitly by
+user. If no response type set, `DummyResponseContext` will be used.
+
+Please take a look at examples below, which may clarify everything.
+
+```
+require './vendor/autoload.php';
+
+$nanoRest = new NanoRest();
+
+//explicitly set expected response type
+$nanoRest->setResponseContext(ResponseContext::getByType(ResponseContext::RESPONSE_TYPE_JSON));
+
+//create request context
+$requestContext = (new RequestContext('http://httpbin.org/post')) //pass URL to constructor
+    ->setMethod(RequestContext::METHOD_POST) //set request method. GET is default
+    ->setRequestParameters([ //set some request parameters. They will be attached to URL
+        'foo' => 'bar'
+    ])
+    ->setData('Hello world!') //set request data for body
+    ->setContentType(RequestContext::CONTENT_TYPE_TEXT_PLAIN) //being set by default
+    ->setHeaders([ // set some headers for request
+        'bar' => 'baz'
+    ]);
+
+$responseContext = $nanoRest->sendRequest($requestContext);
+
+$responseContext->getHttpStatusCode(); //200
+$responseContext->hasHttpError() //false
+
+$responseContext->getArray();
+
+/**
+array(8) {
+  'args' =>
+  array(1) {
+    'foo' =>
+    string(3) "bar"
+  }
+  'data' =>
+  string(12) "Hello world!"
+  'files' =>
+  array(0) {
+  }
+  'form' =>
+  array(0) {
+  }
+  'headers' =>
+  array(8) {
+    'Accept' =>
+    string(3) "*/*"
+    'Accept-Encoding' =>
+    string(13) "deflate, gzip"
+    'Bar' =>
+    string(3) "baz"
+    'Connection' =>
+    string(5) "close"
+    'Content-Length' =>
+    string(2) "12"
+    'Content-Type' =>
+    string(25) "text/plain; charset=UTF-8"
+    'Host' =>
+    string(11) "httpbin.org"
+    'User-Agent' =>
+    string(13) "php-nano-rest"
+  }
+  'json' =>
+  NULL
+  'origin' =>
+  string(12) "93.85.47.181"
+  'url' =>
+  string(31) "http://httpbin.org/post?foo=bar"
+}
+*/
+
+```
+
+`RequestContext` provides `setCurlOption`/`setCurlOptions` which allow to override default CURL options
+and customize request for all your needs. Please examine source code and provided `IntegrationTest` carefully
+to get the whole idea.
+
+Changelog
+=========
+
+To keep track, please refer to [CHANGELOG.md](https://github.com/GinoPane/php-nano-rest/blob/master/CHANGELOG.md).
+
 Contributing
 ============
+
+Please refer to [CONTRIBUTION.md](https://github.com/GinoPane/php-nano-rest/blob/master/README.md).
+
+License
+=======
+
+Please refer to [LICENCE](https://github.com/GinoPane/php-nano-rest/blob/master/LICENCE).

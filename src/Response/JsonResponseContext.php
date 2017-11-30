@@ -8,8 +8,6 @@ use GinoPane\NanoRest\Exceptions\ResponseContextException;
  * Class JsonResponseContext
  *
  * Response context with JSON handling
- *
- * @package GinoPane\NanoRest\Response
  */
 class JsonResponseContext extends ResponseContext
 {

@@ -4,8 +4,6 @@ namespace GinoPane\NanoRest\Supplemental;
 
 /**
  * Trait HeadersProperty
- *
- * @package GinoPane\NanoRest\Supplemental
  */
 trait HeadersProperty
 {

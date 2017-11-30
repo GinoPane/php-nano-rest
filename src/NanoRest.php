@@ -74,8 +74,10 @@ class NanoRest
      *
      * @return ResponseContext
      */
-    public function sendRequest(RequestContext $requestContext, ResponseContext $responseContext = null)
-    {
+    public function sendRequest(
+        RequestContext $requestContext,
+        ResponseContext $responseContext = null
+    ): ResponseContext {
         $curlHandle = $this->curlHelper->getRequestHandle($requestContext);
 
         if (!$responseContext) {

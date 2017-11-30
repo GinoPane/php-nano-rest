@@ -6,8 +6,6 @@ namespace GinoPane\NanoRest\Supplemental;
  * Class Headers
  *
  * Simple container object to store request and response headers
- *
- * @package GinoPane\NanoRest\Supplemental
  */
 class Headers
 {

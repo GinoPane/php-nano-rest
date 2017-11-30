@@ -6,8 +6,6 @@ namespace GinoPane\NanoRest\Response;
  * Class DummyResponseContext
  *
  * Dummy result context, can be used as default
- *
- * @package GinoPane\NanoRest\Response
  */
 class DummyResponseContext extends ResponseContext
 {

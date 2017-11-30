@@ -8,7 +8,6 @@ use GinoPane\NanoRest\Supplemental\HeadersProperty;
 /**
  * Class RequestContext
  *
- * @package GinoPane\NanoRest\Request
  * @author Sergey <Gino Pane> Karavay
  */
 class RequestContext
