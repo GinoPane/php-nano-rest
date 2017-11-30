@@ -1,0 +1,30 @@
+env:
+  global:
+    - CC_TEST_REPORTER_ID=07797ba906eb3eafe832b9b8dad50e27bbbfac104386e0422513256da28a2044
+    - GIT_COMMITTED_AT=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then git log -1 --pretty=format:%ct; else git log -1 --skip 1 --pretty=format:%ct; fi)
+    - CODECOV_TOKEN=63c673df-75e5-4ed4-b6ee-f4d1578ee55b
+
+language: php
+
+sudo: false
+
+php:
+    - 7.1
+    - 7.2
+    - master
+
+before_script:
+    - composer self-update
+    - composer require codeclimate/php-test-reporter --dev
+    - composer install --no-interaction --prefer-source --dev
+    - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+    - chmod +x ./cc-test-reporter
+    - ./cc-test-reporter before-build
+
+script:
+    - vendor/bin/phpunit --configuration phpunit.xml
+    - if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi
+
+after_success:
+    - cp /build/logs/clover.xml coverage.xml
+    - bash <(curl -s https://codecov.io/bash)
