@@ -11,7 +11,7 @@
         "php rest",
         "nano rest"
     ],
-    "license": "DBAD",
+    "license": "MIT",
     "authors": [
         {
             "name": "Sergey <Gino Pane> Karavay",
