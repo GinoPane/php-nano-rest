@@ -160,15 +160,17 @@ class Headers
         foreach (explode("\n", $headers) as $header) {
             @list($headerTitle, $headerValue) = explode(':', $header, 2);
 
-            if (isset($headerValue)) {
-                $headerTitle = self::processKey(trim($headerTitle));
-                $headerValue = trim($headerValue);
+            if (!isset($headerValue)) {
+                continue;
+            }
 
-                if (!isset($parsedHeaders[$headerTitle])) {
-                    $parsedHeaders[$headerTitle] = $headerValue;
-                } else {
-                    $parsedHeaders[$headerTitle] .= ", $headerValue";
-                }
+            $headerTitle = self::processKey(trim($headerTitle));
+            $headerValue = trim($headerValue);
+
+            if (!isset($parsedHeaders[$headerTitle])) {
+                $parsedHeaders[$headerTitle] = $headerValue;
+            } else {
+                $parsedHeaders[$headerTitle] .= ", $headerValue";
             }
         }
 

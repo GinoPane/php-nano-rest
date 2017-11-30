@@ -66,22 +66,7 @@ class CurlHelper
 
         curl_close($curlHandle);
 
-        if ($error) {
-            $errorMessage = "\ncURL transport error: $errorNumber - $error";
-
-            $transportException = new TransportException($errorMessage);
-
-            if (!empty($verbose)) {
-                rewind($verbose);
-                $verboseLog = htmlspecialchars(stream_get_contents($verbose));
-
-                if ($verboseLog) {
-                    $transportException->setData($verboseLog);
-                }
-            }
-
-            throw $transportException;
-        }
+        $this->handleCurlError($error, $errorNumber, $verbose);
 
         return [
             'response' => $response,
@@ -109,6 +94,9 @@ class CurlHelper
     /**
      * Get timeout settings for CURL handler
      *
+     * @link https://curl.haxx.se/libcurl/c/CURLOPT_TIMEOUT_MS.html
+     * @link https://curl.haxx.se/libcurl/c/CURLOPT_CONNECTTIMEOUT_MS.html
+     *
      * @param RequestContext $context
      *
      * @return array
@@ -123,6 +111,7 @@ class CurlHelper
             $timeoutOptions[CURLOPT_TIMEOUT] = $timeout;
         } elseif (is_float($timeout)) {
             $timeoutOptions[CURLOPT_TIMEOUT_MS] = $timeout * 1000;
+            $timeoutOptions[CURLOPT_NOSIGNAL] = 1;
         }
 
         $connectionTimeout = $context->getConnectionTimeout();
@@ -131,13 +120,6 @@ class CurlHelper
             $timeoutOptions[CURLOPT_CONNECTTIMEOUT] = $connectionTimeout;
         } elseif (is_float($connectionTimeout)) {
             $timeoutOptions[CURLOPT_CONNECTTIMEOUT_MS] = $connectionTimeout * 1000;
-        }
-
-        /**
-         * @link https://curl.haxx.se/libcurl/c/CURLOPT_TIMEOUT_MS.html
-         * @link https://curl.haxx.se/libcurl/c/CURLOPT_CONNECTTIMEOUT_MS.html
-         */
-        if (is_float($timeout) || is_float($connectionTimeout)) {
             $timeoutOptions[CURLOPT_NOSIGNAL] = 1;
         }
 
@@ -175,5 +157,32 @@ class CurlHelper
         $curlOptions[CURLOPT_URL] = $url;
 
         return $curlOptions;
+    }
+
+    /**
+     * @param $error
+     * @param $errorNumber
+     * @param $verbose
+     *
+     * @throws TransportException
+     */
+    private function handleCurlError($error, $errorNumber, $verbose): void
+    {
+        if ($error) {
+            $errorMessage = "\ncURL transport error: $errorNumber - $error";
+
+            $transportException = new TransportException($errorMessage);
+
+            if (!empty($verbose)) {
+                rewind($verbose);
+                $verboseLog = htmlspecialchars(stream_get_contents($verbose));
+
+                if ($verboseLog) {
+                    $transportException->setData($verboseLog);
+                }
+            }
+
+            throw $transportException;
+        }
     }
 }
