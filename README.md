@@ -133,7 +133,7 @@ To keep track, please refer to [CHANGELOG.md](https://github.com/GinoPane/php-na
 Contributing
 ============
 
-Please refer to [CONTRIBUTION.md](https://github.com/GinoPane/php-nano-rest/blob/master/README.md).
+Please refer to [CONTRIBUTION.md](https://github.com/GinoPane/php-nano-rest/blob/master/CONTRIBUTION.md).
 
 License
 =======
