@@ -138,4 +138,4 @@ Please refer to [CONTRIBUTION.md](https://github.com/GinoPane/php-nano-rest/blob
 License
 =======
 
-Please refer to [LICENCE](https://github.com/GinoPane/php-nano-rest/blob/master/LICENCE).
+Please refer to [LICENSE](https://github.com/GinoPane/php-nano-rest/blob/master/LICENSE).
