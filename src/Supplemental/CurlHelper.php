@@ -174,7 +174,7 @@ class CurlHelper
 
         $verboseLog = stream_get_contents($verbose);
 
-        if ($verboseLog) {
+        if ($verboseLog !== false) {
             $verboseLog = htmlspecialchars($verboseLog);
 
             $transportException->setData($verboseLog);
