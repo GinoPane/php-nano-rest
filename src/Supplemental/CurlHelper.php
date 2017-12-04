@@ -20,13 +20,7 @@ class CurlHelper
     {
         $curlHandle = curl_init();
 
-        $defaults = [
-            CURLOPT_ENCODING        => "",
-            CURLOPT_USERAGENT       => "php-nano-rest",
-            CURLOPT_HEADER          => true,
-            CURLOPT_HTTPHEADER      => array_values($context->getRequestHeaders()),
-            CURLOPT_RETURNTRANSFER  => true,
-        ];
+        $defaults = $this->getDefaultSettings($context);
 
         $defaults += $this->getCurlTimeoutSettings($context);
 
@@ -134,6 +128,25 @@ class CurlHelper
         );
 
         return $timeoutOptions;
+    }
+
+    /**
+     * Get defaults settings for cURL handle
+     *
+     * @param RequestContext $context
+     * @return array
+     */
+    private function getDefaultSettings(RequestContext $context): array
+    {
+        $defaults = [
+            CURLOPT_ENCODING => "",
+            CURLOPT_USERAGENT => "php-nano-rest",
+            CURLOPT_HEADER => true,
+            CURLOPT_HTTPHEADER => array_values($context->getRequestHeaders()),
+            CURLOPT_RETURNTRANSFER => true,
+        ];
+
+        return $defaults;
     }
 
     /**
