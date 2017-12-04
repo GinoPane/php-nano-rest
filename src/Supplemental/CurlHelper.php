@@ -107,21 +107,15 @@ class CurlHelper
 
         $timeout = $context->getTimeout();
 
-        if (is_int($timeout)) {
-            $timeoutOptions[CURLOPT_TIMEOUT] = $timeout;
-        } elseif (is_float($timeout)) {
-            $timeoutOptions[CURLOPT_TIMEOUT_MS] = $timeout * 1000;
-            $timeoutOptions[CURLOPT_NOSIGNAL] = 1;
-        }
+        $timeoutOptions += $this->fillTimeoutOptions($timeout, CURLOPT_TIMEOUT, CURLOPT_TIMEOUT_MS);
 
         $connectionTimeout = $context->getConnectionTimeout();
 
-        if (is_int($connectionTimeout)) {
-            $timeoutOptions[CURLOPT_CONNECTTIMEOUT] = $connectionTimeout;
-        } elseif (is_float($connectionTimeout)) {
-            $timeoutOptions[CURLOPT_CONNECTTIMEOUT_MS] = $connectionTimeout * 1000;
-            $timeoutOptions[CURLOPT_NOSIGNAL] = 1;
-        }
+        $timeoutOptions += $this->fillTimeoutOptions(
+            $connectionTimeout, //@codeCoverageIgnore
+            CURLOPT_CONNECTTIMEOUT,
+            CURLOPT_CONNECTTIMEOUT_MS
+        );
 
         return $timeoutOptions;
     }
@@ -168,21 +162,47 @@ class CurlHelper
      */
     private function handleCurlError($error, $errorNumber, $verbose): void
     {
-        if ($error) {
-            $errorMessage = "\ncURL transport error: $errorNumber - $error";
-
-            $transportException = new TransportException($errorMessage);
-
-            if (!empty($verbose)) {
-                rewind($verbose);
-                $verboseLog = htmlspecialchars(stream_get_contents($verbose));
-
-                if ($verboseLog) {
-                    $transportException->setData($verboseLog);
-                }
-            }
-
-            throw $transportException;
+        if (!$error) {
+            return;
         }
+
+        $errorMessage = "\ncURL transport error: $errorNumber - $error";
+
+        $transportException = new TransportException($errorMessage);
+
+        rewind($verbose);
+
+        $verboseLog = stream_get_contents($verbose);
+
+        if ($verboseLog) {
+            $verboseLog = htmlspecialchars($verboseLog);
+
+            $transportException->setData($verboseLog);
+        }
+
+        throw $transportException;
+    }
+
+    /**
+     * Fill timeout options
+     *
+     * @param $timeout
+     * @param $optionName
+     * @param $optionNameMs
+     *
+     * @return array
+     */
+    private function fillTimeoutOptions($timeout, $optionName, $optionNameMs): array
+    {
+        $timeoutOptions = [];
+
+        if (is_int($timeout)) {
+            $timeoutOptions[$optionName] = $timeout;
+        } elseif (is_float($timeout)) {
+            $timeoutOptions[$optionNameMs] = $timeout * 1000;
+            $timeoutOptions[CURLOPT_NOSIGNAL] = 1;
+        }
+
+        return $timeoutOptions;
     }
 }
