@@ -80,7 +80,7 @@ class JsonResponseContext extends ResponseContext
      */
     protected function assertIsValid(string $content): bool
     {
-        @json_decode($content);
+        json_decode($content);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             $error = json_last_error_msg();
