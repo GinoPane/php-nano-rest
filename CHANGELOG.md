@@ -16,6 +16,21 @@ Types of changes
 
 ## [Unreleased]
 
+## 1.0.1 - 2017-12-04
+
+### Added
+
+* Applied Scrutinizer badge.
+
+### Fixed
+
+* Fixed some typos;
+* refactored some code for Scrutinizer.
+
+### Security
+
+* Removed error suppression for json_decode in JsonResponseContext
+
 ## 1.0.0 - 2017-11-30
 
 ### Features
@@ -27,5 +42,4 @@ Types of changes
 * generation of docs failed - PhpDoc cannot build full class hierarchy;
 * more to come - short syntax for most common requests, cookies, response type based on content-type header, etc.
 
-
-[Unreleased]: https://github.com/GinoPane/php-nano-rest/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/GinoPane/php-nano-rest/compare/v1.0.1...HEAD
