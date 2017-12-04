@@ -32,13 +32,12 @@ class CurlHelper
 
         $defaults += $this->getCurlSslSettings();
 
-        if (!is_null($context->getProxy())) {
-            $defaults[CURLOPT_PROXY] = $context->getProxy();
-        }
+        $defaults += $this->getProxySettings($context);
 
-        $dataAndMethodOptions = $this->getRequestDataAndMethodOptions($context);
-
-        curl_setopt_array($curlHandle, $context->getCurlOptions() + $defaults + $dataAndMethodOptions);
+        curl_setopt_array(
+            $curlHandle, //@codeCoverageIgnore
+            $context->getCurlOptions() + $defaults + $this->getRequestDataAndMethodOptions($context)
+        );
 
         return $curlHandle;
     }
@@ -89,6 +88,23 @@ class CurlHelper
             CURLOPT_SSL_VERIFYHOST  => 2,
             CURLOPT_CAINFO          => ROOT_DIRECTORY . DIRECTORY_SEPARATOR . 'cacert.pem'
         ];
+    }
+
+    /**
+     * Get proxy settings for cURL handle
+     *
+     * @param RequestContext $context
+     * @return array
+     */
+    private function getProxySettings(RequestContext $context): array
+    {
+        $proxy = [];
+
+        if (!is_null($context->getProxy())) {
+            $proxy[CURLOPT_PROXY] = $context->getProxy();
+        }
+
+        return $proxy;
     }
 
     /**
