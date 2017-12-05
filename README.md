@@ -50,6 +50,8 @@ user. If no response type set, `DummyResponseContext` will be used.
 
 Please take a look at examples below, which may clarify everything.
 
+#### POST some data to endpoint
+
 ```
 require './vendor/autoload.php';
 
@@ -125,6 +127,61 @@ array(8) {
 `RequestContext` provides `setCurlOption`/`setCurlOptions` which allow to override default cURL options
 and customize request for all your needs. Please examine source code and provided `IntegrationTest` carefully
 to get the whole idea.
+
+#### Change the way how request query is generated
+
+By default http_build_query encodes arrays using php square brackets syntax, like this:
+
+`?text[0]=1&text[1]=2&text[2]=3`
+
+But sometimes you'll want it to work like this instead:
+
+`?text=1&text=2&text=3`
+
+Or even in some other custom-defined way.
+
+That's why `setEncodeArraysUsingDuplication` and `setHttpQueryCustomProcessor` methods were added to `RequestContext`:
+
+```
+$url = "http://some.url";
+$data = ['text' => [1,2,3]];
+
+$request = (new RequestContext($url))
+            ->setRequestParameters($data)
+            ->setEncodeArraysUsingDuplication(false);
+
+$requestUrl = $request->getRequestUrl(); //http://some.url?text%5B0%5D=1&text%5B1%5D=2&text%5B2%5D=3
+```
+
+```
+$url = "http://some.url";
+$data = ['text' => [1,2,3]];
+
+$request = (new RequestContext($url))
+            ->setRequestParameters($data)
+            ->setEncodeArraysUsingDuplication(true);
+
+$requestUrl = $request->getRequestUrl(); //http://some.url?text=1&text=2&text=3
+```
+
+Method `setHttpQueryCustomProcessor` allows you to set your custom `Closure` that will be called on HTTP query string so you could process it as you wish. Initial request `$data` array will be passed to it as a second parameter.
+
+```
+$url = "http://some.url";
+$data = ['text' => [1,2,3]];
+
+$request = (new RequestContext($url))
+            ->setRequestParameters($data)
+            ->setEncodeArraysUsingDuplication(true);
+            
+$request->setHttpQueryCustomProcessor(
+    function (string $query, array $data) {
+        return str_replace('text', 'data', $query);
+    }
+);
+
+$requestUrl = $request->getRequestUrl(); //http://some.url?data=1&data=2&data=3
+```
 
 Changelog
 =========

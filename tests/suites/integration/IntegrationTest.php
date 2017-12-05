@@ -38,7 +38,7 @@ class IntegrationTest extends TestCase
         $this->assertFalse($responseContext->hasHttpError());
 
         $this->assertTrue($responseContext->getRequestContext() instanceof RequestContext);
-        $this->assertEquals('https://httpbin.org/get', $responseContext->getRequestContext()->getUri());
+        $this->assertEquals('https://httpbin.org/get', $responseContext->getRequestContext()->getUrl());
 
         $responseArray = $responseContext->getArray();
 

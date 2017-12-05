@@ -158,15 +158,14 @@ class CurlHelper
     {
         $curlOptions = array();
 
-        $requestData = $context->getData();
-        $requestData = is_array($requestData) ? http_build_query($requestData) : $requestData;
+        $requestData = $context->getRequestData();
 
-        $url = $context->getRequestUri();
+        $url = $context->getRequestUrl();
 
         switch ($context->getMethod()) {
             case RequestContext::METHOD_GET:
                 $curlOptions[CURLOPT_HTTPGET] = 1;
-                $url .= (strpos($url, '?') === false ? '?' : '') . $requestData;
+                $url = $context->attachQueryToUrl($url, $requestData);
                 break;
             case RequestContext::METHOD_POST:
                 $curlOptions[CURLOPT_POST] = 1;

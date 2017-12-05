@@ -93,7 +93,7 @@ class RequestContext
     private $data = null;
 
     /**
-     * Parameters that should be appended to request URI
+     * Parameters that should be appended to request URL
      *
      * @var array
      */
@@ -107,11 +107,11 @@ class RequestContext
     private $curlOptions = [];
 
     /**
-     * URI string for request
+     * URL string for request
      *
      * @var string
      */
-    private $uri = '';
+    private $url = '';
 
     /**
      * Address of proxy server
@@ -135,16 +135,17 @@ class RequestContext
     private $timeout = self::TIMEOUT_DEFAULT;
 
     use HeadersProperty;
+    use HttpBuildQueryBehavior;
 
     /**
      * RequestContext constructor
      *
-     * @param string $uri
+     * @param string $url
      */
-    public function __construct(string $uri = '')
+    public function __construct(string $url = '')
     {
-        if ($uri) {
-            $this->setUri($uri);
+        if ($url) {
+            $this->setUrl($url);
         }
     }
 
@@ -209,6 +210,20 @@ class RequestContext
     }
 
     /**
+     * Get previously set data encoded for request
+     *
+     * @return string
+     */
+    public function getRequestData(): string
+    {
+        $requestData = $this->getData();
+
+        $requestData = is_array($requestData) ? $this->httpBuildQuery($requestData) : (string)$requestData;
+
+        return $requestData;
+    }
+
+    /**
      * Get HTTP method
      *
      * @return string
@@ -241,45 +256,58 @@ class RequestContext
     }
 
     /**
-     * Get URI string
+     * Get URL string
      *
      * @return string
      */
-    public function getUri(): string
+    public function getUrl(): string
     {
-        return $this->uri;
+        return $this->url;
     }
 
     /**
-     * Set URI string
+     * Set URL string
      *
-     * @param string $uri
+     * @param string $url
      *
      * @return RequestContext
      */
-    public function setUri(string $uri): RequestContext
+    public function setUrl(string $url): RequestContext
     {
-        $this->assertValidUri($uri);
+        $this->assertValidUrl($url);
 
-        $this->uri = $uri;
+        $this->url = $url;
 
         return $this;
     }
 
     /**
-     * Get URI string with request parameters applied
+     * Get URL string with request parameters applied
      *
      * @return string
      */
-    public function getRequestUri(): string
+    public function getRequestUrl(): string
     {
-        $uri = $this->getUri();
+        $url = $this->getUrl();
 
         if ($this->getRequestParameters()) {
-            $uri .= (strpos($uri, '?') === false ? '?' : '') . http_build_query($this->getRequestParameters());
+            $url = $this->attachQueryToUrl($url, $this->httpBuildQuery($this->getRequestParameters()));
         }
 
-        return $uri;
+        return $url;
+    }
+
+    /**
+     * Attach request query to URL
+     *
+     * @param $url
+     * @param $query
+     *
+     * @return string
+     */
+    public function attachQueryToUrl($url, $query): string
+    {
+        return $url . (strpos($url, '?') === false ? '?' : '') . $query;
     }
 
     /**
@@ -418,7 +446,7 @@ class RequestContext
      */
     public function setProxy(string $proxy): RequestContext
     {
-        $this->assertValidUri($proxy);
+        $this->assertValidUrl($proxy);
 
         $this->proxy = $proxy;
 
@@ -465,7 +493,6 @@ class RequestContext
         return $this;
     }
 
-
     /**
      * Get string representation of RequestContext object
      *
@@ -486,7 +513,7 @@ class RequestContext
         return <<<DEBUG
 ===================
 Method: {$this->getMethod()}
-Request URI: {$this->getRequestUri()}
+Request URL: {$this->getRequestUrl()}
 ===================
 Headers:
 
@@ -504,16 +531,16 @@ DEBUG;
     }
 
     /**
-     * Throw exception on invalid URI
+     * Throw exception on invalid URL
      *
-     * @param string $uri
+     * @param string $url
      *
      * @throws RequestContextException
      */
-    private function assertValidUri(string $uri): void
+    private function assertValidUrl(string $url): void
     {
-        if (!(filter_var($uri, FILTER_VALIDATE_URL) || filter_var($uri, FILTER_VALIDATE_IP))) {
-            throw new RequestContextException("Failed to set invalid URI: $uri");
+        if (!(filter_var($url, FILTER_VALIDATE_URL) || filter_var($url, FILTER_VALIDATE_IP))) {
+            throw new RequestContextException("Failed to set invalid URL: $url");
         }
     }
 }

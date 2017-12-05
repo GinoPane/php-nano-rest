@@ -24,25 +24,27 @@ class RequestContextTest extends TestCase
 
         $this->assertTrue($context instanceof RequestContext);
 
-        $this->assertEquals('http://some.url', $context->getUri());
+        $this->assertEquals('http://some.url', $context->getUrl());
     }
 
-    public function testThatWrongUriCausesExceptions()
+    public function testThatWrongUrlCausesExceptions()
     {
         $this->expectException(RequestContextException::class);
 
         $context = new RequestContext();
 
-        $context->setUri('i am wrong');
+        $context->setUrl('i am wrong');
     }
 
     public function testThatProxyCanBeSet()
     {
         $context = new RequestContext();
 
-        $context->setProxy('http://some.url');
+        $url = 'http://some.url?a=1';
 
-        $this->assertEquals('http://some.url', $context->getProxy());
+        $context->setProxy($url);
+
+        $this->assertEquals($url, $context->getProxy());
     }
 
     public function testThatWrongProxyCausesExceptions()
@@ -166,14 +168,14 @@ class RequestContextTest extends TestCase
     {
         $context = new RequestContext();
 
-        $context->setUri('http://example.com');
+        $context->setUrl('http://example.com');
         $context->headers()->setHeaders(['foo' => 'bar']);
         $context->setData(['a' => '1', 'b' => 'c']);
 
         $expected = <<<EXPECTED
 ===================
 Method: GET
-Request URI: http://example.com
+Request URL: http://example.com
 ===================
 Headers:
 
@@ -201,7 +203,7 @@ EXPECTED;
 
         $this->assertEquals(str_replace("\r\n", "\n", $expected), str_replace("\r\n", "\n", (string)$context));
 
-        $context->setUri('http://example.com');
+        $context->setUrl('http://example.com');
         $context->headers()->setHeaders([]);
         $context->setData([]);
         $context->setRequestParameters(['a' => '1', 'b' => 'c']);
@@ -210,7 +212,7 @@ EXPECTED;
         $expected = <<<EXPECTED
 ===================
 Method: GET
-Request URI: http://example.com?a=1&b=c
+Request URL: http://example.com?a=1&b=c
 ===================
 Headers:
 
@@ -232,6 +234,65 @@ Array
 EXPECTED;
 
         $this->assertEquals(str_replace("\r\n", "\n", $expected), str_replace("\r\n", "\n", (string)$context));
+    }
+
+    /**
+     * @dataProvider getDataForRequestUrlGeneration
+     *
+     * @param $url
+     * @param $data
+     * @param $encodeArraysUsingDuplication
+     * @param $queryPostProcessor
+     * @param $expected
+     */
+    public function testThatRequestUrlIsGeneratedCorrectlyForDefaultHttpBuildQuery(
+        $url,
+        $data,
+        $encodeArraysUsingDuplication,
+        $queryPostProcessor,
+        $expected
+    ) {
+        $request = (new RequestContext($url))
+            ->setRequestParameters($data)
+            ->setEncodeArraysUsingDuplication($encodeArraysUsingDuplication);
+
+        if ($queryPostProcessor) {
+            $request->setHttpQueryCustomProcessor($queryPostProcessor);
+        }
+
+        $requestUrl = $request->getRequestUrl();
+
+        $this->assertEquals($expected, $requestUrl);
+    }
+
+    /**
+     * @return array
+     */
+    public function getDataForRequestUrlGeneration()
+    {
+        return [
+            ['http://some.url', [1,2,3], false, null, 'http://some.url?0=1&1=2&2=3'],
+            ['http://some.url', [], false, null, 'http://some.url'],
+            [
+                'http://some.url',
+                ['text' => [1,2,3]],
+                false,
+                null,
+                'http://some.url?text%5B0%5D=1&text%5B1%5D=2&text%5B2%5D=3'
+            ],
+            ['http://some.url', [1,2,3], true, null, 'http://some.url?0=1&1=2&2=3'],
+            ['http://some.url', [], true, null, 'http://some.url'],
+            ['http://some.url', ['text' => [1,2,3]], true, null, 'http://some.url?text=1&text=2&text=3'],
+            [
+                'http://some.url',
+                ['text' => [1,2,3]],
+                true,
+                function (string $query, array $data) {
+                    return str_replace('text', 'data', $query);
+                },
+                'http://some.url?data=1&data=2&data=3'
+            ],
+        ];
     }
 
     /**

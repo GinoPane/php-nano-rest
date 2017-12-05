@@ -34,7 +34,7 @@ class ResponseContextTest extends TestCase
         $this->assertEquals('content', $context->getRaw());
     }
 
-    public function testThatWrongUriCausesExceptions()
+    public function testThatWrongJsonCausesExceptions()
     {
         $this->expectException(ResponseContextException::class);
 

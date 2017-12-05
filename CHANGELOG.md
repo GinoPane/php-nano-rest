@@ -16,6 +16,15 @@ Types of changes
 
 ## [Unreleased]
 
+## 1.1.0 - 2017-12-05
+
+### Added
+* RequestContext::setEncodeArraysUsingDuplication to build proper query strings in some cases.
+* RequestContext::setHttpQueryCustomProcessor to add custom post-processor for query string.
+
+### Changed
+* All usages of "uri" were replaced by "url" for consistency.
+
 ## 1.0.1 - 2017-12-04
 
 ### Added
@@ -42,4 +51,4 @@ Types of changes
 * generation of docs failed - PhpDoc cannot build full class hierarchy;
 * more to come - short syntax for most common requests, cookies, response type based on content-type header, etc.
 
-[Unreleased]: https://github.com/GinoPane/php-nano-rest/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/GinoPane/php-nano-rest/compare/v1.1.0...HEAD
