@@ -7,6 +7,9 @@ use GinoPane\NanoRest\{
     Exceptions\TransportException
 };
 
+/**
+ * Class CurlHelper
+ */
 class CurlHelper
 {
     /**

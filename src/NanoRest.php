@@ -15,7 +15,6 @@ use GinoPane\NanoRest\{
  *
  * Abstract implementation of transport layer
  *
- * @package GinoPane\NanoRest
  * @author Sergey <Gino Pane> Karavay
  */
 class NanoRest
