@@ -1,8 +1,6 @@
 PHP Nano Rest
 =============
 
-<sub>Powered by [composer-package-template](https://github.com/GinoPane/composer-package-template)</sub>
-
 [![Latest Stable Version](https://poser.pugx.org/gino-pane/nano-rest/v/stable)](https://packagist.org/packages/gino-pane/nano-rest)
 [![Build Status](https://travis-ci.org/GinoPane/php-nano-rest.svg?branch=master)](https://travis-ci.org/GinoPane/php-nano-rest)
 [![Maintainability](https://img.shields.io/codeclimate/maintainability/GinoPane/php-nano-rest.svg)](https://codeclimate.com/github/GinoPane/php-nano-rest/maintainability)
@@ -197,3 +195,8 @@ License
 =======
 
 Please refer to [LICENSE](https://github.com/GinoPane/php-nano-rest/blob/master/LICENSE).
+
+Notes
+=====
+
+Powered by [composer-package-template](https://github.com/GinoPane/composer-package-template).
