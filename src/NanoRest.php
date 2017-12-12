@@ -91,7 +91,7 @@ class NanoRest
         ) = $this->curlHelper->executeRequestHandle($curlHandle);
 
         $responseContext->setRequestContext($requestContext)
-            ->setHttpStatusCode($status)
+            ->setHttpStatusCode((int)$status)
             ->setContent($content);
 
         $responseContext->headers()->setHeadersFromString($headers);

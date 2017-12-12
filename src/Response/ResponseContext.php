@@ -2,6 +2,8 @@
 
 namespace GinoPane\NanoRest\Response;
 
+use GinoPane\NanoHttpStatus\NanoHttpStatus;
+
 use GinoPane\NanoRest\{
     Exceptions\ResponseContextException, Request\RequestContext, Supplemental\HeadersProperty
 };
@@ -13,17 +15,6 @@ use GinoPane\NanoRest\{
  */
 abstract class ResponseContext
 {
-    /**
-     * Integer part of possible HTTP error codes (4xx, 5xx)
-     *
-     * @link https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
-     * @link https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#4xx_Client_errors
-     * @link https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#5xx_Server_errors
-     *
-     * @var array
-     */
-    private static $errorCodesRange = array(4, 5);
-
     /**
      * Constant for JSON response type
      */
@@ -152,9 +143,9 @@ abstract class ResponseContext
      *
      * @return ResponseContext
      */
-    public function setHttpStatusCode($httpStatusCode): ResponseContext
+    public function setHttpStatusCode(int $httpStatusCode): ResponseContext
     {
-        $this->httpStatusCode = (int)$httpStatusCode;
+        $this->httpStatusCode = $httpStatusCode;
 
         return $this;
     }
@@ -190,11 +181,9 @@ abstract class ResponseContext
      */
     public function hasHttpError(): bool
     {
-        if (in_array(floor($this->httpStatusCode / 100), self::$errorCodesRange)) {
-            return true;
-        }
+        $httpStatus = new NanoHttpStatus();
 
-        return false;
+        return $httpStatus->isClientError($this->httpStatusCode) || $httpStatus->isServerError($this->httpStatusCode);
     }
 
     /**

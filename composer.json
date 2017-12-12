@@ -1,10 +1,11 @@
 {
     "name": "gino-pane/nano-rest",
     "description": "Minimalistic and self-contained cURL HTTP REST client for PHP",
-    "homepage": "http://github.com/GinoPane/PhpNanoRest",
+    "homepage": "https://github.com/GinoPane/php-nano-rest",
     "keywords": [
         "http client",
         "rest client",
+        "nano rest",
         "minimalistic",
         "http",
         "rest",
@@ -21,14 +22,15 @@
         }
     ],
     "support": {
-        "source": "http://github.com/GinoPane/PhpNanoRest",
-        "docs": "https://github.com/GinoPane/PhpNanoRest/blob/master/README.md",
-        "issues": "https://github.com/GinoPane/PhpNanoRest/issues"
+        "source": "http://github.com/GinoPane/php-nano-rest",
+        "docs": "https://github.com/GinoPane/php-nano-rest/blob/master/README.md",
+        "issues": "https://github.com/GinoPane/php-nano-rest/issues"
     },
     "type": "library",
     "require": {
         "php": "^7.1",
-        "ext-curl": "*"
+        "ext-curl": "*",
+        "gino-pane/nano-http-status": "^1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^6.0",
@@ -40,5 +42,19 @@
         "psr-4": {
             "GinoPane\\NanoRest\\": "src/"
         }
+    },
+    "scripts": {
+        "test": [
+            "@php vendor/bin/phpunit"
+        ],
+        "psr2check": [
+            "@php vendor/bin/phpcs --standard=PSR2 src/"
+        ],
+        "psr2autofix": [
+            "@php vendor/bin/phpcbf --standard=PSR2 src/"
+        ],
+        "docs": [
+            "@php vendor/bin/phpdoc -d \"src\" -t \"docs\""
+        ]
     }
 }
