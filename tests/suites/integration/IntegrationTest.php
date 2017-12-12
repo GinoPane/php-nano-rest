@@ -114,6 +114,7 @@ class IntegrationTest extends TestCase
         $responseContext = $nanoRest->sendRequest($requestContext);
 
         $this->assertEquals(200, $responseContext->getHttpStatusCode());
+        $this->assertEquals('OK', $responseContext->getHttpStatusMessage());
         $this->assertFalse($responseContext->hasHttpError());
 
         $responseArray = $responseContext->getArray();
@@ -164,7 +165,7 @@ class IntegrationTest extends TestCase
 
             $this->fail('Exception was not thrown!');
         } catch (TransportException $exception) {
-            $this->assertNotFalse(stripos($exception->getData(), "* Could not resolve host: idont.exist"));
+            $this->assertNotEmpty($exception->getData());
         }
     }
 }

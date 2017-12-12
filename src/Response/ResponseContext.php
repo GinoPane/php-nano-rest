@@ -136,6 +136,15 @@ abstract class ResponseContext
     }
 
     /**
+     * Get HTTP status message from response
+     *
+     * @return string
+     */
+    public function getHttpStatusMessage(): string
+    {
+        return (new NanoHttpStatus())->getMessage($this->httpStatusCode);
+    }
+    /**
      * Set HTTP status code for response
      *
      * @param int|string $httpStatusCode
