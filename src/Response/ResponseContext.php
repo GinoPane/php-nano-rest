@@ -11,7 +11,6 @@ use GinoPane\NanoRest\{
 /**
  * Class ResponseContext
  *
- * @package GinoPane\NanoRest\Response
  */
 abstract class ResponseContext
 {

@@ -2,7 +2,7 @@
 
 namespace GinoPane\NanoRest;
 
-define('ROOT_DIRECTORY', dirname(dirname(__FILE__)));
+define('ROOT_DIRECTORY', dirname(__FILE__, 2));
 
 use GinoPane\NanoRest\{
     Request\RequestContext,
@@ -15,7 +15,6 @@ use GinoPane\NanoRest\{
  *
  * Abstract implementation of transport layer
  *
- * @package GinoPane\NanoRest
  * @author Sergey <Gino Pane> Karavay
  */
 class NanoRest
