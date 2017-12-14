@@ -83,7 +83,7 @@ class CurlHelper
         return [
             CURLOPT_SSL_VERIFYPEER  => true,
             CURLOPT_SSL_VERIFYHOST  => 2,
-            CURLOPT_CAINFO          => ROOT_DIRECTORY . DIRECTORY_SEPARATOR . 'cacert.pem'
+            CURLOPT_CAINFO          => \GinoPane\NanoRest\ROOT_DIRECTORY . DIRECTORY_SEPARATOR . 'cacert.pem'
         ];
     }
 

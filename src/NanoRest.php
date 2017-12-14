@@ -2,7 +2,7 @@
 
 namespace GinoPane\NanoRest;
 
-define('ROOT_DIRECTORY', dirname(__FILE__, 2));
+define(__NAMESPACE__ . '\ROOT_DIRECTORY', dirname(__FILE__, 2));
 
 use GinoPane\NanoRest\{
     Request\RequestContext,

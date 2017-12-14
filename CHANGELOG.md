@@ -16,6 +16,16 @@ Types of changes
 
 ## [Unreleased]
 
+## 1.1.3 - 2017-12-14
+
+### Changed
+* ROOT_DIRECTORY is defined in NanoRest namespace to avoid conflicts.
+
+## 1.1.2 - 2017-12-12
+
+### Added
+* ResponseContext::getHttpStatusMessage which returns HTTP status message.
+
 ## 1.1.1 - 2017-12-12
 
 ### Added
