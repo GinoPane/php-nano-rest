@@ -60,7 +60,7 @@ class NanoRest
      *
      * @return ResponseContext
      */
-    public function getResponseContext()
+    public function getResponseContext(): ResponseContext
     {
         return $this->responseContext ?: ResponseContext::getByType('');
     }
