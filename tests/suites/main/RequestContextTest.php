@@ -2,6 +2,7 @@
 
 namespace GinoPane\NanoRest;
 
+use GinoPane\NanoRest\Response\DummyResponseContext;
 use PHPUnit\Framework\TestCase;
 use GinoPane\NanoRest\Request\RequestContext;
 use GinoPane\NanoRest\Exceptions\RequestContextException;
@@ -265,6 +266,24 @@ EXPECTED;
         $this->assertEquals($expected, $requestUrl);
     }
 
+    public function testIfDefaultResponseContextCanBeRetrieved()
+    {
+        $request = new RequestContext();
+
+        $response = $request->getResponseContextObject();
+
+        $this->assertTrue($response instanceof DummyResponseContext);
+    }
+
+    public function testIfWrongResponseContextThrowsException()
+    {
+        $this->expectException(RequestContextException::class);
+
+        $request = new RequestContext();
+
+        $request->setResponseContextClass(NanoRest::class);
+    }
+
     /**
      * @return array
      */
@@ -288,9 +307,9 @@ EXPECTED;
                 ['text' => [1,2,3]],
                 true,
                 function (string $query, array $data) {
-                    return str_replace('text', 'data', $query);
+                    return str_replace('text', count($data['text']), $query);
                 },
-                'http://some.url?data=1&data=2&data=3'
+                'http://some.url?3=1&3=2&3=3'
             ],
         ];
     }

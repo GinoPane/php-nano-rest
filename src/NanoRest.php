@@ -7,7 +7,9 @@ define('ROOT_DIRECTORY', dirname(__FILE__, 2));
 use GinoPane\NanoRest\{
     Request\RequestContext,
     Supplemental\CurlHelper,
-    Response\ResponseContext
+    Response\ResponseContext,
+    Exceptions\TransportException,
+    Exceptions\ResponseContextException
 };
 
 /**
@@ -27,13 +29,6 @@ class NanoRest
     private $curlHelper = null;
 
     /**
-     * Default response context
-     *
-     * @var ResponseContext
-     */
-    private $responseContext = null;
-
-    /**
      * NanoRest constructor
      */
     public function __construct()
@@ -42,46 +37,21 @@ class NanoRest
     }
 
     /**
-     * Sets current request context
-     *
-     * @param ResponseContext $context
-     *
-     * @return $this
-     */
-    public function setResponseContext(ResponseContext $context)
-    {
-        $this->responseContext = $context;
-
-        return $this;
-    }
-
-    /**
-     * Returns current request context
-     *
-     * @return ResponseContext
-     */
-    public function getResponseContext()
-    {
-        return $this->responseContext ?: ResponseContext::getByType('');
-    }
-
-    /**
      * Send previously prepared request
      *
      * @param RequestContext $requestContext
-     * @param ResponseContext $responseContext
+     *
+     * @throws TransportException
+     * @throws ResponseContextException
      *
      * @return ResponseContext
      */
     public function sendRequest(
-        RequestContext $requestContext,
-        ResponseContext $responseContext = null
+        RequestContext $requestContext
     ): ResponseContext {
         $curlHandle = $this->curlHelper->getRequestHandle($requestContext);
 
-        if (!$responseContext) {
-            $responseContext = $this->getResponseContext();
-        }
+        $responseContext = $requestContext->getResponseContextObject();
 
         list(
             'httpStatus'    => $status,

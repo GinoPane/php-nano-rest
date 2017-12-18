@@ -2,9 +2,9 @@
 
 namespace GinoPane\NanoRest;
 
+use GinoPane\NanoRest\Response\JsonResponseContext;
 use PHPUnit\Framework\TestCase;
 use GinoPane\NanoRest\Request\RequestContext;
-use GinoPane\NanoRest\Response\ResponseContext;
 use GinoPane\NanoRest\Exceptions\TransportException;
 
 /**
@@ -22,15 +22,14 @@ class IntegrationTest extends TestCase
     {
         $nanoRest = new NanoRest();
 
-        $nanoRest->setResponseContext(ResponseContext::getByType(ResponseContext::RESPONSE_TYPE_JSON));
-
         $requestContext = (new RequestContext('https://httpbin.org/get'))
             ->setRequestParameters([
                 'foo' => 'bar'
             ])
             ->setHeaders([
                 'bar' => 'baz'
-            ]);
+            ])
+            ->setResponseContextClass(JsonResponseContext::class);
 
         $responseContext = $nanoRest->sendRequest($requestContext);
 
@@ -59,8 +58,6 @@ class IntegrationTest extends TestCase
     {
         $nanoRest = new NanoRest();
 
-        $nanoRest->setResponseContext(ResponseContext::getByType(ResponseContext::RESPONSE_TYPE_JSON));
-
         $requestContext = (new RequestContext('http://httpbin.org/post'))
             ->setMethod(RequestContext::METHOD_POST)
             ->setRequestParameters([
@@ -70,7 +67,8 @@ class IntegrationTest extends TestCase
             ->setContentType(RequestContext::CONTENT_TYPE_TEXT_PLAIN) //being set by default
             ->setHeaders([
                 'bar' => 'baz'
-            ]);
+            ])
+            ->setResponseContextClass(JsonResponseContext::class);
 
         $responseContext = $nanoRest->sendRequest($requestContext);
 
@@ -99,17 +97,19 @@ class IntegrationTest extends TestCase
     {
         $nanoRest = new NanoRest();
 
-        $nanoRest->setResponseContext(ResponseContext::getByType(ResponseContext::RESPONSE_TYPE_JSON));
-
         $requestContext = (new RequestContext('http://httpbin.org/post'))
             ->setMethod(RequestContext::METHOD_POST)
             ->setRequestParameters([
                 'foo' => 'bar'
-            ])->setHeaders([
+            ])
+            ->setHeaders([
                 'bar' => 'baz'
-            ])->setData([
+            ])
+            ->setData([
                 'password' => 'secret'
-            ])->setContentType(RequestContext::CONTENT_TYPE_FORM_URLENCODED);
+            ])
+            ->setContentType(RequestContext::CONTENT_TYPE_FORM_URLENCODED)
+            ->setResponseContextClass(JsonResponseContext::class);
 
         $responseContext = $nanoRest->sendRequest($requestContext);
 

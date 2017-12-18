@@ -91,6 +91,8 @@ abstract class ResponseContext
      * ResponseContext constructor
      *
      * @param string|null $content
+     *
+     * @throws ResponseContextException
      */
     public function __construct(string $content = null)
     {
@@ -103,6 +105,8 @@ abstract class ResponseContext
      * Set result content.
      *
      * @param string $content
+     *
+     * @throws ResponseContextException
      *
      * @return ResponseContext
      */

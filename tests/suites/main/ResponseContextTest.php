@@ -1,9 +1,10 @@
-<?php 
+<?php
 
 namespace GinoPane\NanoRest;
 
 use stdClass;
 use PHPUnit\Framework\TestCase;
+use GinoPane\NanoRest\Response\ResponseContext;
 use GinoPane\NanoRest\Response\JsonResponseContext;
 use GinoPane\NanoRest\Response\DummyResponseContext;
 use GinoPane\NanoRest\Exceptions\ResponseContextException;
@@ -95,6 +96,13 @@ class ResponseContextTest extends TestCase
         $context = new DummyResponseContext('content');
 
         $this->assertEquals('content', (string)$context);
+    }
+
+    public function testThatJsonResponseContextCanBeRetrieved()
+    {
+        $responseObject = ResponseContext::getByType(ResponseContext::RESPONSE_TYPE_JSON);
+
+        $this->assertTrue($responseObject instanceof JsonResponseContext);
     }
 
     /**

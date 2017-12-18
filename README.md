@@ -55,9 +55,6 @@ Please take a look at examples below, which may clarify everything.
     
     $nanoRest = new NanoRest();
     
-    //explicitly set expected response type
-    $nanoRest->setResponseContext(ResponseContext::getByType(ResponseContext::RESPONSE_TYPE_JSON));
-    
     //create request context
     $requestContext = (new RequestContext('http://httpbin.org/post')) //pass URL to constructor
         ->setMethod(RequestContext::METHOD_POST) //set request method. GET is default
@@ -68,7 +65,8 @@ Please take a look at examples below, which may clarify everything.
         ->setContentType(RequestContext::CONTENT_TYPE_TEXT_PLAIN) //being set by default
         ->setHeaders([ // set some headers for request
             'bar' => 'baz'
-        ]);
+        ])
+        ->setResponseContextClass(JsonResponseContext::class); //explicitly set expected response type
     
     $responseContext = $nanoRest->sendRequest($requestContext);
     
@@ -119,7 +117,6 @@ Please take a look at examples below, which may clarify everything.
       string(31) "http://httpbin.org/post?foo=bar"
     }
     */
-
 
 
 `RequestContext` provides `setCurlOption`/`setCurlOptions` which allow to override default cURL options

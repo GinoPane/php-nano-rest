@@ -16,6 +16,12 @@ Types of changes
 
 ## [Unreleased]
 
+## 1.2.0 - 2017-12-18
+
+### Changed
+* Response context handling was removed from NanoRest;
+* response context handling was added to RequestContext instead.
+
 ## 1.1.1 - 2017-12-12
 
 ### Added
@@ -60,4 +66,4 @@ Types of changes
 * generation of docs failed - PhpDoc cannot build full class hierarchy;
 * more to come - short syntax for most common requests, cookies, response type based on content-type header, etc.
 
-[Unreleased]: https://github.com/GinoPane/php-nano-rest/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/GinoPane/php-nano-rest/compare/v1.2.0...HEAD

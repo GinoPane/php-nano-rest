@@ -2,8 +2,9 @@
 
 namespace GinoPane\NanoRest\Request;
 
-use GinoPane\NanoRest\Exceptions\RequestContextException;
+use GinoPane\NanoRest\Response\ResponseContext;
 use GinoPane\NanoRest\Supplemental\HeadersProperty;
+use GinoPane\NanoRest\Exceptions\RequestContextException;
 
 /**
  * Class RequestContext
@@ -134,6 +135,13 @@ class RequestContext
      */
     private $timeout = self::TIMEOUT_DEFAULT;
 
+    /**
+     * The name of the class of desired ResponseContext
+     *
+     * @var string
+     */
+    private $responseContextClass = '';
+
     use HeadersProperty;
     use HttpBuildQueryBehavior;
 
@@ -141,6 +149,8 @@ class RequestContext
      * RequestContext constructor
      *
      * @param string $url
+     *
+     * @throws RequestContextException
      */
     public function __construct(string $url = '')
     {
@@ -270,6 +280,8 @@ class RequestContext
      *
      * @param string $url
      *
+     * @throws RequestContextException
+     *
      * @return RequestContext
      */
     public function setUrl(string $url): RequestContext
@@ -335,7 +347,7 @@ class RequestContext
     }
 
     /**
-     * Get CURL options
+     * Get cURL options
      *
      * @return array
      */
@@ -371,6 +383,8 @@ class RequestContext
      * Set an array of CURL options for context. Please note, that old options would be removed or overwritten
      *
      * @param array $curlOptions
+     *
+     * @throws RequestContextException
      *
      * @return RequestContext
      */
@@ -491,6 +505,42 @@ class RequestContext
         $this->timeout = $timeout;
 
         return $this;
+    }
+
+    /**
+     * Sets desired type of response context
+     *
+     * @param string $responseContextClass
+     *
+     * @throws RequestContextException
+     *
+     * @return RequestContext
+     */
+    public function setResponseContextClass(string $responseContextClass): RequestContext
+    {
+        if (!is_a($responseContextClass, ResponseContext::class, true)) {
+            throw new RequestContextException(
+                sprintf(
+                    "Class %s must have %s as one of its parents",
+                    $responseContextClass,
+                    ResponseContext::class
+                )
+            );
+        }
+
+        $this->responseContextClass = $responseContextClass;
+
+        return $this;
+    }
+
+    /**
+     * Returns current response context object of desired type
+     *
+     * @return ResponseContext
+     */
+    public function getResponseContextObject(): ResponseContext
+    {
+        return $this->responseContextClass ? new $this->responseContextClass() : ResponseContext::getByType('');
     }
 
     /**
