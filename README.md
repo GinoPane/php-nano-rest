@@ -3,8 +3,8 @@ PHP Nano Rest
 
 [![Latest Stable Version](https://poser.pugx.org/gino-pane/nano-rest/v/stable)](https://packagist.org/packages/gino-pane/nano-rest)
 [![Build Status](https://travis-ci.org/GinoPane/php-nano-rest.svg?branch=master)](https://travis-ci.org/GinoPane/php-nano-rest)
-[![Maintainability](https://img.shields.io/codeclimate/maintainability/GinoPane/php-nano-rest.svg)](https://codeclimate.com/github/GinoPane/php-nano-rest/maintainability)
-[![Test Coverage](https://img.shields.io/codeclimate/coverage/github/GinoPane/php-nano-rest.svg)](https://codeclimate.com/github/GinoPane/php-nano-rest/test_coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/f87cf0eef8aad99c488c/maintainability)](https://codeclimate.com/github/GinoPane/php-nano-rest/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/f87cf0eef8aad99c488c/test_coverage)](https://codeclimate.com/github/GinoPane/php-nano-rest/test_coverage)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/GinoPane/php-nano-rest/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/GinoPane/php-nano-rest/?branch=master)
 [![SensioLabs Insight](https://img.shields.io/sensiolabs/i/a31125f1-ff97-41c9-b0f1-9e6b5eb58470.svg)](https://insight.sensiolabs.com/projects/a31125f1-ff97-41c9-b0f1-9e6b5eb58470)
 [![License](https://poser.pugx.org/gino-pane/nano-rest/license)](https://packagist.org/packages/gino-pane/nano-rest)
