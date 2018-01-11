@@ -125,7 +125,7 @@ to get the whole idea.
 
 #### Change the way how request query is generated
 
-By default http_build_query encodes arrays using php square brackets syntax, like this:
+By default `http_build_query` encodes arrays using PHP square brackets syntax, like this:
 
     ?text[0]=1&text[1]=2&text[2]=3
 
@@ -221,7 +221,7 @@ To keep track, please refer to [CHANGELOG.md](https://github.com/GinoPane/php-na
 Contributing
 ============
 
-Please refer to [CONTRIBUTION.md](https://github.com/GinoPane/php-nano-rest/blob/master/CONTRIBUTION.md).
+Please refer to [CONTRIBUTING.md](https://github.com/GinoPane/php-nano-rest/blob/master/CONTRIBUTING.md).
 
 License
 =======

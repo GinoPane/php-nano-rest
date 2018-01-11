@@ -4,7 +4,7 @@ namespace GinoPane\NanoRest;
 
 use stdClass;
 use PHPUnit\Framework\TestCase;
-use GinoPane\NanoRest\Response\ResponseContext;
+use GinoPane\NanoRest\Response\ResponseContextAbstract;
 use GinoPane\NanoRest\Response\JsonResponseContext;
 use GinoPane\NanoRest\Response\DummyResponseContext;
 use GinoPane\NanoRest\Exceptions\ResponseContextException;
@@ -100,7 +100,7 @@ class ResponseContextTest extends TestCase
 
     public function testThatJsonResponseContextCanBeRetrieved()
     {
-        $responseObject = ResponseContext::getByType(ResponseContext::RESPONSE_TYPE_JSON);
+        $responseObject = ResponseContextAbstract::getByType(ResponseContextAbstract::RESPONSE_TYPE_JSON);
 
         $this->assertTrue($responseObject instanceof JsonResponseContext);
     }

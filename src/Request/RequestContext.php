@@ -2,8 +2,8 @@
 
 namespace GinoPane\NanoRest\Request;
 
-use GinoPane\NanoRest\Response\ResponseContext;
 use GinoPane\NanoRest\Supplemental\HeadersProperty;
+use GinoPane\NanoRest\Response\ResponseContextAbstract;
 use GinoPane\NanoRest\Exceptions\RequestContextException;
 
 /**
@@ -518,12 +518,12 @@ class RequestContext
      */
     public function setResponseContextClass(string $responseContextClass): RequestContext
     {
-        if (!is_a($responseContextClass, ResponseContext::class, true)) {
+        if (!is_a($responseContextClass, ResponseContextAbstract::class, true)) {
             throw new RequestContextException(
                 sprintf(
                     "Class %s must have %s as one of its parents",
-                    $responseContextClass,
-                    ResponseContext::class
+                    $responseContextClass, //@codeCoverageIgnore
+                    ResponseContextAbstract::class
                 )
             );
         }
@@ -536,11 +536,11 @@ class RequestContext
     /**
      * Returns current response context object of desired type
      *
-     * @return ResponseContext
+     * @return ResponseContextAbstract
      */
-    public function getResponseContextObject(): ResponseContext
+    public function getResponseContextObject(): ResponseContextAbstract
     {
-        return $this->responseContextClass ? new $this->responseContextClass() : ResponseContext::getByType('');
+        return $this->responseContextClass ? new $this->responseContextClass() : ResponseContextAbstract::getByType('');
     }
 
     /**

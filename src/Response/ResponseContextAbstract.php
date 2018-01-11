@@ -12,7 +12,7 @@ use GinoPane\NanoRest\{
  * Class ResponseContext
  *
  */
-abstract class ResponseContext
+abstract class ResponseContextAbstract
 {
     /**
      * Constant for JSON response type
@@ -96,9 +96,7 @@ abstract class ResponseContext
      */
     public function __construct(string $content = null)
     {
-        if (!is_null($content)) {
-            $this->setContent($content);
-        }
+        $this->setContent($content);
     }
 
     /**
@@ -108,10 +106,14 @@ abstract class ResponseContext
      *
      * @throws ResponseContextException
      *
-     * @return ResponseContext
+     * @return ResponseContextAbstract
      */
-    public function setContent(string $content): ResponseContext
+    public function setContent(string $content = null): ResponseContextAbstract
     {
+        if (is_null($content)) {
+            return $this;
+        }
+
         $this->assertIsValid($content);
 
         $this->content = $content;
@@ -153,9 +155,9 @@ abstract class ResponseContext
      *
      * @param int|string $httpStatusCode
      *
-     * @return ResponseContext
+     * @return ResponseContextAbstract
      */
-    public function setHttpStatusCode(int $httpStatusCode): ResponseContext
+    public function setHttpStatusCode(int $httpStatusCode): ResponseContextAbstract
     {
         $this->httpStatusCode = $httpStatusCode;
 
@@ -167,9 +169,9 @@ abstract class ResponseContext
      *
      * @param RequestContext $request
      *
-     * @return ResponseContext
+     * @return ResponseContextAbstract
      */
-    public function setRequestContext(RequestContext $request): ResponseContext
+    public function setRequestContext(RequestContext $request): ResponseContextAbstract
     {
         $this->requestContext = $request;
 
@@ -204,9 +206,9 @@ abstract class ResponseContext
      * @param string $type
      * @param string|null $content
      *
-     * @return ResponseContext
+     * @return ResponseContextAbstract
      */
-    public static function getByType(string $type, string $content = null): ResponseContext
+    public static function getByType(string $type, string $content = null): ResponseContextAbstract
     {
         switch ($type) {
             case self::RESPONSE_TYPE_JSON:

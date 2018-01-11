@@ -9,7 +9,7 @@ use GinoPane\NanoRest\Exceptions\ResponseContextException;
  *
  * Response context with JSON handling
  */
-class JsonResponseContext extends ResponseContext
+class JsonResponseContext extends ResponseContextAbstract
 {
     /**
      * Get raw result data

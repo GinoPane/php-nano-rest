@@ -16,6 +16,17 @@ Types of changes
 
 ## [Unreleased]
 
+## 1.2.1 - 2018-01-11
+
+### Changed
+* Allow empty JSON response bodies to be processed correctly;
+* renamed ResponseContext to ResponseContextAbstract (because it is abstract);
+* renamed CONTRIBUTION.md to CONTRIBUTING.md;
+* small README update.
+
+### Added
+* CODE_OF_CONDUCT.md, PULL_REQUEST_TEMPLATE.md, issue_template.md
+
 ## 1.2.0 - 2017-12-18
 
 ### Changed
@@ -76,4 +87,4 @@ Types of changes
 * generation of docs failed - PhpDoc cannot build full class hierarchy;
 * more to come - short syntax for most common requests, cookies, response type based on content-type header, etc.
 
-[Unreleased]: https://github.com/GinoPane/php-nano-rest/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/GinoPane/php-nano-rest/compare/v1.2.1...HEAD

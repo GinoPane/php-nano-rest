@@ -7,7 +7,7 @@ namespace GinoPane\NanoRest\Response;
  *
  * Dummy result context, can be used as default
  */
-class DummyResponseContext extends ResponseContext
+class DummyResponseContext extends ResponseContextAbstract
 {
     /**
      * Get raw result data

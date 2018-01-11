@@ -7,7 +7,7 @@ define(__NAMESPACE__ . '\ROOT_DIRECTORY', dirname(__FILE__, 2));
 use GinoPane\NanoRest\{
     Request\RequestContext,
     Supplemental\CurlHelper,
-    Response\ResponseContext,
+    Response\ResponseContextAbstract,
     Exceptions\TransportException,
     Exceptions\ResponseContextException
 };
@@ -44,11 +44,11 @@ class NanoRest
      * @throws TransportException
      * @throws ResponseContextException
      *
-     * @return ResponseContext
+     * @return ResponseContextAbstract
      */
     public function sendRequest(
         RequestContext $requestContext
-    ): ResponseContext {
+    ): ResponseContextAbstract {
         $curlHandle = $this->curlHelper->getRequestHandle($requestContext);
 
         $responseContext = $requestContext->getResponseContextObject();
@@ -60,8 +60,11 @@ class NanoRest
         ) = $this->curlHelper->executeRequestHandle($curlHandle);
 
         $responseContext->setRequestContext($requestContext)
-            ->setHttpStatusCode((int)$status)
-            ->setContent($content);
+            ->setHttpStatusCode((int)$status);
+
+        if ($content) {
+            $responseContext->setContent($content);
+        }
 
         $responseContext->headers()->setHeadersFromString($headers);
 
