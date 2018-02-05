@@ -74,7 +74,7 @@ class CurlHelper
     /**
      * Get SSL settings for CURL handler
      *
-     * CA certificate bundle was generated on 2017-09-20.
+     * CA certificate bundle was generated at Wed Jan 17 04:12:05 2018 GMT.
      * CURL_SSL_XXX options has recommended values for production environments
      *
      * @link https://curl.haxx.se/docs/caextract.html
