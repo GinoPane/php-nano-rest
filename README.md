@@ -8,7 +8,6 @@ PHP Nano Rest
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/GinoPane/php-nano-rest/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/GinoPane/php-nano-rest/?branch=master)
 [![SensioLabs Insight](https://img.shields.io/sensiolabs/i/a31125f1-ff97-41c9-b0f1-9e6b5eb58470.svg)](https://insight.sensiolabs.com/projects/a31125f1-ff97-41c9-b0f1-9e6b5eb58470)
 [![License](https://poser.pugx.org/gino-pane/nano-rest/license)](https://packagist.org/packages/gino-pane/nano-rest)
-[![composer.lock](https://poser.pugx.org/gino-pane/nano-rest/composerlock)](https://packagist.org/packages/gino-pane/nano-rest)
 [![Total Downloads](https://poser.pugx.org/gino-pane/nano-rest/downloads)](https://packagist.org/packages/gino-pane/nano-rest)
 
 Easy-to-use self-containing lightweight package to deal with cURL requests.
