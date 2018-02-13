@@ -211,6 +211,15 @@ Building Docs:
  or 
  
     composer docs
+    
+Updating Cacert.pem:
+--------
+    
+        php bin/update-cacert.php
+     
+     or
+     
+        composer update-cacert
 
 
 Changelog

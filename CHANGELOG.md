@@ -16,6 +16,11 @@ Types of changes
 
 ## [Unreleased]
 
+## 1.2.3 - 2018-02-13
+
+### Changed
+* added composer script to update cacert.pem automatically after composer install or update.
+
 ## 1.2.2 - 2018-02-05
 
 ### Changed
@@ -92,4 +97,4 @@ Types of changes
 * generation of docs failed - PhpDoc cannot build full class hierarchy;
 * more to come - short syntax for most common requests, cookies, response type based on content-type header, etc.
 
-[Unreleased]: https://github.com/GinoPane/php-nano-rest/compare/v1.2.2...HEAD
+[Unreleased]: https://github.com/GinoPane/php-nano-rest/compare/v1.2.3...HEAD

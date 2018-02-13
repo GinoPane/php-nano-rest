@@ -55,6 +55,11 @@
         ],
         "docs": [
             "@php vendor/bin/phpdoc -d \"src\" -t \"docs\""
-        ]
+        ],
+        "update-cacert": [
+            "@php bin/update-cacert.php"
+        ],
+        "post-update-cmd": "@update-cacert",
+        "post-install-cmd": "@update-cacert"
     }
 }
